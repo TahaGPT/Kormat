@@ -3,23 +3,25 @@
 This is the single progress log for GenAI Assignment 2. It records where we started, where we are now, what we tried, what failed, the numbers we got, and the decisions we made. The IEEE paper is written from it.
 Board: https://synverk.abdulhaque.dev/projects/aee8a2fc-a70e-4570-8c66-cfdc59bc0519 · Repo: https://github.com/TahaGPT/Kormat
 
-## Status board (rubric → evidence)
+## Status board (rubric → evidence), updated 2026-11-10 23:45
 | code | criterion | cards | status | evidence |
 |---|---|---|---|---|
-| A1 | literature | TGA-4 | todo | docs/research/literature.md |
-| A2 | model choice & feasibility | TGA-2, TGA-5 | todo | docs/research/model_comparison.md |
-| A3 | research-informed decisions | TGA-5, TGA-6, ADRs | todo | docs/decisions/ |
-| B1 | dataset integrity & fixed split | TGA-7, TGA-9, TGA-3 | todo | results/split_manifest.json |
-| B2 | I/O processing | TGA-8, TGA-10, TGA-11, TGA-12 | todo | results/data/ |
-| B3 | fine-tuning implementation | TGA-18, TGA-19, TGA-20 | todo | results/finetune/ |
-| B4 | before/after | TGA-17, TGA-21 | todo | results/eval/ |
-| C1–C3 | labels, detailed metrics, evidence | TGA-13–16, TGA-22 | todo | results/eval/test_final/ |
-| C4 | traceable explanations, ≥8 errors | TGA-23 | todo | docs/research/error_analysis.md |
-| D1–D3 | KV cache | TGA-24–27 | todo | results/kvcache/ |
-| E1–E3 | attention | TGA-28–31 | todo | results/attention/ |
-| F1–F3 | speculative | TGA-32–35 | todo | results/speculative/ |
-| G1–G4 | application | TGA-36–41 | todo | src/kormat/app/, results/app/ |
-| H1–H3 | paper, repro, defense | TGA-42–48 | todo | report/ |
+| A1 | literature | TGA-4 | done | docs/research/literature.md, report/refs.bib (17 verified sources) |
+| A2 | model choice & feasibility | TGA-2, TGA-5 | done | docs/research/model_comparison.md, results/probe/summary.md |
+| A3 | research-informed decisions | TGA-5, TGA-6, ADRs | done | docs/decisions/ADR-001…005, this journal |
+| B1 | dataset integrity & fixed split | TGA-7, TGA-9, TGA-3 | done | results/split_manifest.json, results/finetune/split_overlap_check.json |
+| B2 | I/O processing | TGA-8, TGA-10–12 | done | results/data/, src/kormat/data, src/kormat/prompting |
+| B3 | fine-tuning implementation | TGA-18–20 | done (shared run, disclosed) | results/finetune/{shared_run,smoke}/, configs/train.yaml, configs/final.yaml |
+| B4 | before/after | TGA-17, TGA-21 | done (test); val ft running | results/eval/test_final/{base,ft}/ |
+| C1–C3 | labels, detailed metrics, evidence | TGA-13–16, TGA-22 | done | results/eval/test_final/ft/metrics.json |
+| C4 | traceable explanations, ≥8 errors | TGA-23 | done | docs/research/error_analysis.md (11 cases) |
+| D1–D3 | KV cache | TGA-24–27 | done | results/kvcache/ |
+| E1–E3 | attention | TGA-28–31 | done | results/attention/ |
+| F1–F3 | speculative | TGA-32–35 | done | results/speculative/ |
+| G1–G4 | application | TGA-36–41 | done | src/kormat/app/, results/app/, report/figures/app_*.png |
+| H1 | paper | TGA-42–45 | done (video link pending) | report/main.pdf |
+| H2 | repro + video | TGA-46, TGA-47 | README done; video pending (user) | README.md, docs/demo_script.md |
+| H3 | defense | TGA-48 | user | docs/ (ADRs, journal) |
 
 ## Entry format
 ```
@@ -191,3 +193,13 @@ Evidence: micro P/R/F1 0.53/0.63/0.58; macro F1 (all records) 0.82; empty/non-em
 **Shared-run logs:** found in the co-trainer's public repo, copied unmodified with source and commit to `results/finetune/shared_run/`, and plotted by us (`training_curves_shared.pdf`).
 
 **Paper hook:** §V-B/C/D, Table errors, Fig. training curves.
+
+## 2026-11-10 · TGA-21/22/45 · Before/after on the test split; paper results; UI redesign
+**Before/after (test, 206 criteria, identical prompt + plain greedy):** base accuracy 0.160 → fine-tuned 0.733; macro-F1 0.129 → 0.528; exclusion accuracy 0.038 → 0.702; evidence micro-F1 0.17 → 0.58; 129 criteria fixed, 11 broken (McNemar p ≈ 1e-26).
+The base model never outputs "not enough information" or "not excluded". It labels 83 of 131 exclusion criteria "excluded", reading the label as "criterion relevant", and over-cites (3.0 sentences per criterion vs the experts' 0.46).
+
+**Metric convention fixed before final numbers:** macro-F1 now averages over the classes present in gold or predictions; the fixed-list variant is kept as `macro_f1_fixed`.
+
+**Paper:** all Results subsections written from committed numbers. A factual slip was caught in review: the KV cache is 28 KB/token in bf16 and 56 KB in fp32, not 28 KB in fp32.
+
+**UI:** monochrome Swiss redesign (ui-ux-pro-max design system) with a transparent logo, a loading screen with a three.js helix, a hero 3D object that pauses during inference, colour-independent label chips and self-describing mode cards. The lead review fixed a hero text/3D overlap and truncated criterion-type labels.
