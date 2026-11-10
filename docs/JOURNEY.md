@@ -78,3 +78,16 @@ Board: https://synverk.abdulhaque.dev/projects/aee8a2fc-a70e-4570-8c66-cfdc59bc0
 **Decision:** conservative aggregation rule, unknowns never count as eligibility (ADR-004).
 **What surprised us:** RAM is shared with other agents, so real-model smoke runs queue behind the model lock; UI layout was verified with the fake engine (screenshots in report/figures/app_*.png are fake-engine layouts, not results).
 **Paper hook:** §III application workflow; screenshots figure.
+
+## 2026-11-10 · TGA-28/29/30 · Reference SDPA, tiled online-softmax attention, numerical validation
+**Goal:** correct, validated attention kernels (E1, E2). **Machine:** CPU laptop **Run(s):** results/attention/validation.csv, summary.json
+**What we tried:** `attention_ref` (full L x L scores, max-subtracted softmax, GQA via repeat_interleave, bottom-right causal mask `j <= i + Lk - Lq`, bool mask, fully masked rows give 0). `tiled_attention` in two variants: "loops" (explicit q-block x kv-block Python loops) and "kv_blocked" (all queries, loop over kv blocks); fp32 accumulation; causal block skipping; guard so `-inf - -inf` never yields NaN.
+**Online-softmax derivation (paper Algorithm 1):** for a row with scores s_1..s_n, softmax output is o = (sum_j e^{s_j - M} v_j) / (sum_j e^{s_j - M}) for any constant M. Process keys in blocks. After blocks 1..t keep m_t = max so far, l_t = sum_{j<=t} e^{s_j - m_t}, O_t = sum_{j<=t} e^{s_j - m_t} v_j. A new block with block max m~ gives m_{t+1} = max(m_t, m~). Then e^{s_j - m_{t+1}} = e^{m_t - m_{t+1}} e^{s_j - m_t} for old j, so l_{t+1} = e^{m_t - m_{t+1}} l_t + sum_{new} e^{s_j - m_{t+1}} and O_{t+1} = e^{m_t - m_{t+1}} O_t + sum_{new} e^{s_j - m_{t+1}} v_j. The old terms are rescaled exactly by one scalar per row, so after the last block o = O_n / l_n equals full softmax attention and no L x L matrix is stored. First block: m_0=-inf, e^{-inf}=0 (we use m_safe=0 when m_new=-inf to avoid NaN). Logsumexp = m + log l.
+**Numbers:** 1680 rows (3 impls x 560 cases: L in {1,7,16,63,64,65,127,256,513,1024}, Lq!=Lk (1,777),(5,300), d 64/128, B 1/2, (H,Hkv) (4,4)/(12,2), blocks 16-128 incl. asymmetric, 4 mask kinds, fp32/bf16/fp16), all pass vs float64 truth.
+| dtype | max_abs | tol (atol, rtol) |
+|---|---|---|
+| fp32 | 2.5e-6 | 1e-5, 1e-4 |
+| fp16 | 9.7e-4 | 2e-3, 2e-3 |
+| bf16 | 7.8e-3 | 2e-3, 8e-3 (bf16 output rounding is one ulp = 2^-7 relative) |
+Stability: at logits x1000 (max |logit| 4543) naive exp/sum gives NaN, tiled output is finite with max abs error 3e-4 vs float64.
+**What failed / surprised us:** with the brief's bf16 rtol 2e-3 the output rounding alone would exceed tolerance, so rtol was set to 8e-3 and the reason recorded. max_rel column is large (up to 0.12) only where the true value is ~0 (floored at 1e-6); the pass criterion is the atol+rtol rule. fp16 works on CPU (inputs rounded to half, compute in fp32). Truth uses the already-rounded half inputs so only kernel error is measured.

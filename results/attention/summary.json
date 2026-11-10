@@ -1,0 +1,68 @@
+{
+  "n_rows": 1680,
+  "n_pass": 1680,
+  "n_fail": 0,
+  "fp16_supported_on_cpu": true,
+  "fp16_note": "",
+  "tolerances": {
+    "float32": [
+      1e-05,
+      0.0001
+    ],
+    "float16": [
+      0.002,
+      0.002
+    ],
+    "bfloat16": [
+      0.002,
+      0.008
+    ]
+  },
+  "tolerance_rule": "|out - truth| <= atol + rtol*|truth|; truth = attention_ref in float64 on the same (already dtype-rounded) inputs",
+  "by_dtype": {
+    "bfloat16": {
+      "rows": 552,
+      "pass": 552,
+      "max_abs": 0.007767183657254151,
+      "mean_abs_mean": 0.0002073362994044768,
+      "max_rel": 0.04237006198764247
+    },
+    "float16": {
+      "rows": 552,
+      "pass": 552,
+      "max_abs": 0.0009739974065938739,
+      "mean_abs_mean": 2.5949100652258726e-05,
+      "max_rel": 0.11649925943993719
+    },
+    "float32": {
+      "rows": 576,
+      "pass": 576,
+      "max_abs": 2.488838029668372e-06,
+      "mean_abs_mean": 3.621923293027543e-08,
+      "max_rel": 0.11128331731807828
+    }
+  },
+  "failures": [],
+  "env": {
+    "python": "3.10.12",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "processor": "x86_64",
+    "hostname": "TahaGPT",
+    "cpu_count": 8,
+    "ram_total_gb": 15.46,
+    "ram_available_gb": 7.03,
+    "torch": "2.5.1+cpu",
+    "torch_threads": 4,
+    "cuda_available": false,
+    "transformers": "4.46.3",
+    "peft": "0.13.2"
+  },
+  "stability_demo": {
+    "logit_scale_factor": 1000.0,
+    "max_abs_logit": 4542.7958984375,
+    "naive_softmax_has_nan": true,
+    "naive_softmax_has_inf": false,
+    "tiled_has_nan": false,
+    "tiled_max_abs_err_vs_f64": 0.0002985739424530287
+  }
+}
