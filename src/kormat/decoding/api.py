@@ -248,7 +248,9 @@ def hf_generate(model, input_ids, max_new_tokens, eos_ids, tokenizer=None, force
             first.setdefault("t", time.perf_counter())
             return torch.zeros(ids.shape[0], dtype=torch.bool)
 
-    kw = dict(max_new_tokens=max_new_tokens, do_sample=False, eos_token_id=sorted(eos_ids),
+    # repetition_penalty=1.0 explicitly: the Qwen generation_config.json ships 1.1, which would silently change the
+    # argmax and make the library reference differ from pure greedy.
+    kw = dict(max_new_tokens=max_new_tokens, do_sample=False, repetition_penalty=1.0, eos_token_id=sorted(eos_ids),
               pad_token_id=sorted(eos_ids)[0], stopping_criteria=StoppingCriteriaList([_T()]),
               attention_mask=torch.ones_like(input_ids))
     if force_len:
