@@ -1,0 +1,36 @@
+{
+  "vocab_identical": true,
+  "n_vocab": 151665,
+  "config_vocab_size": [
+    151936,
+    151936
+  ],
+  "added_tokens_identical": true,
+  "eos": [
+    "<|im_end|>",
+    "<|im_end|>"
+  ],
+  "eos_ids_equal": true,
+  "eos_ids": [
+    151645
+  ],
+  "chat_template_identical": true,
+  "adapter_tokenizer_vocab_identical": true,
+  "probe_encodings_identical": true,
+  "layers": [
+    28,
+    24
+  ],
+  "hidden": [
+    1536,
+    896
+  ],
+  "kv_heads": [
+    2,
+    2
+  ],
+  "tie_word_embeddings": [
+    true,
+    true
+  ]
+}
