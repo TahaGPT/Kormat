@@ -1,0 +1,59 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{figures/}{../assets/}}
+
+% ---- placeholders the author must fill in; each shows in red ----
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+\newcommand{\interpret}[1]{\textcolor{blue}{[INTERPRET: #1]}}
+\newcommand{\maybeinput}[1]{\IfFileExists{#1.tex}{\input{#1}}{\todo{generated table \detokenize{#1} missing}}}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+
+\begin{document}
+
+\title{Kormat: Fine-Tuned Small-Language-Model Eligibility Screening with a From-Scratch KV Cache, Tiled Attention and Speculative Decoding on a CPU}
+
+\author{\IEEEauthorblockN{Taha Ahmed}
+\IEEEauthorblockA{Roll no.\ \todo{roll number}, Section \todo{section}\\
+\todo{department / university}\\
+\todo{email}}}
+
+\maketitle
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\begin{IEEEkeywords}
+clinical trial eligibility, criterion-level matching, LoRA, KV cache, online-softmax attention, speculative decoding, CPU inference
+\end{IEEEkeywords}
+
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/methods}
+\input{sections/experimental_setup}
+\input{sections/results}
+\input{sections/limitations}
+\input{sections/conclusion}
+
+\section*{Availability}
+Source code: \todo{GitHub URL (TahaGPT/Kormat)}. Adapter weights: Hugging Face \texttt{arceus1rk/eligitrace-qwen2.5-1.5b-lora}. Split manifest and logs are in the repository under \texttt{results/}. Demo video: \todo{video link}.
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\appendices
+\input{sections/appendix_ai}
+
+\end{document}

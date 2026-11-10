@@ -1,0 +1,13 @@
+\section{Experimental Setup and Metrics}
+\label{sec:setup}
+\textbf{Hardware and software.} All reported numbers were produced on a laptop with an Intel Core i5-10310U (4 cores, 8 threads), 15~GB RAM and no GPU, with Python 3.10, PyTorch 2.5.1 (CPU), Transformers 4.46.3 and PEFT 0.13.2, all pinned in the repository lock file. Only one large model is loaded at a time (a file lock enforces this). Each run writes a record (config, environment, metrics) under \texttt{results/<area>/}, and the commit SHA is stored with it. % TODO-INTERPRET: confirm versions from results/env/*.json.
+
+\textbf{Compared systems.} (i) the base Qwen2.5-1.5B-Instruct with the same prompt contract (\emph{before}); (ii) base plus the shared LoRA adapter (\emph{after}). Both are evaluated on identical validation and test examples with greedy decoding (temperature 0), the same maximum number of new tokens and the same JSON parser. Invalid or unparsable outputs are counted as an explicit INVALID class and are never dropped. Hyperparameters and prompts were chosen using validation only; the test split was evaluated once, at the end.
+
+\textbf{Classification metrics.} Accuracy, macro-F1, per-class precision/recall/F1 and confusion matrices, overall and separately for inclusion and exclusion criteria, each over its own four-way label set; macro-F1 averages over classes present in the gold labels. Labels are never collapsed to binary.
+
+\textbf{Evidence metrics.} For each prediction, precision, recall and F1 of the predicted sentence-ID set against the expert set. Records where the gold evidence set is empty (e.g.\ ``not enough information'') are scored separately: a prediction with an empty set counts as correct, a non-empty set as a false positive. We report micro and per-record macro averages and the number of such records. % TODO-INTERPRET: verify against src/kormat/eval/evidence.py once final.
+
+\textbf{Systems metrics.} Latency per generated token and end-to-end per criterion (median and spread over repeated runs after warm-up), peak resident memory, speed-up of cache vs.\ recomputation, peak memory and time of tiled vs.\ reference attention across sequence lengths, and for speculative decoding the acceptance rate, mean accepted tokens per verify pass and wall-clock speed-up over target-only greedy decoding. Output equality with the baseline is checked token by token.
+
+\textbf{Uncertainty.} With 8 test patients, metric differences are noisy; we report counts alongside percentages and, where available, bootstrap intervals over patients. % TODO-INTERPRET: only claim what the interval supports.

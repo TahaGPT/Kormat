@@ -1,0 +1,14 @@
+\section{Introduction and Problem Statement}
+\label{sec:intro}
+Recruiting patients for clinical trials depends on reading long free-text notes against lists of inclusion and exclusion criteria. TrialGPT showed that a large language model can do this criterion by criterion, with explanations, close to expert accuracy~\cite{jin2024trialgpt}. That system relies on a closed, remote model, which is a cost and a privacy problem for patient text~\cite{nievas2023distilling}. This work asks a narrower and more practical question: \emph{how far can a small open model (1.5B parameters) adapted with parameter-efficient fine-tuning get on the criterion-level task, and what does it take to run it on a laptop CPU without a GPU?}
+
+\textbf{Problem statement.} Input: a patient note split into numbered sentences, a criterion type (inclusion or exclusion) and a criterion text. Output: a label from the criterion type's own four-way set (included / not included / not enough information / not applicable for inclusion; excluded / not excluded / not enough information / not applicable for exclusion) and the list of supporting sentence IDs. Absent evidence is never treated as proof of eligibility or ineligibility. Any patient--trial verdict shown in our application is an aggregation by explicit rules, not a separately labelled ground truth.
+
+\textbf{Contributions.}
+\begin{enumerate}
+\item A reproducible data pipeline over the mandated dataset with a patient-grouped split and leakage checks, excluding the dataset's GPT-4 predictions from all inputs (Sec.~\ref{sec:methods}).
+\item A before/after evaluation of a LoRA-adapted Qwen2.5-1.5B-Instruct with accuracy, macro-F1, per-class scores, confusion matrices, evidence P/R/F1, split by criterion type (Sec.~\ref{sec:results}). The adapter itself was trained in a \emph{disclosed joint session} on a shared GPU with a classmate; evaluation and everything below are our own work.
+\item Our own implementations of a pre-allocated KV-cache decoder, tiled online-softmax attention (Algorithm~\ref{alg:tiled}) and greedy speculative decoding (Algorithm~\ref{alg:spec}), each validated against the reference implementation and benchmarked on CPU.
+\item A browser application, ``Kormat'', serving the pipeline with cited evidence and rule-based aggregation (Fig.~\ref{fig:app}).
+\end{enumerate}
+The remainder is organised as: related work (Sec.~\ref{sec:related}), methods (Sec.~\ref{sec:methods}), experimental setup (Sec.~\ref{sec:setup}), results (Sec.~\ref{sec:results}), limitations and conclusion.

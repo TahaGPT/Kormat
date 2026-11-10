@@ -1,0 +1,10 @@
+\section{Limitations}
+\label{sec:limits}
+\begin{itemize}
+\item \textbf{Small data.} 53 patients, 8 in test; confidence intervals are wide and per-class results for rare labels rest on few examples.
+\item \textbf{Shared adapter.} The adapter was trained in a joint GPU session; we neither re-trained it independently nor ran seeds or ablations of the training, so we cannot separate training-recipe effects from base-model effects. The other candidate models were compared by configuration arithmetic only.
+\item \textbf{Criterion-level labels only.} The dataset has no patient--trial ground truth; our aggregation is rule based and unvalidated against experts.
+\item \textbf{Length handling.} Over-long examples were dropped from training (never cut); at inference very long notes can exceed the budget and evidence may be lost. \todo{state counts from the token-length analysis}
+\item \textbf{CPU-specific systems results.} Tiled attention and speculative decoding are known GPU-driven speed-ups; our timings are for one laptop CPU with eager PyTorch and do not generalise to GPUs or other CPUs.
+\item \textbf{Not clinical software.} The system is a research prototype; outputs must not be used for real patient decisions.
+\end{itemize}
