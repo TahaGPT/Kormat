@@ -19,4 +19,4 @@ bench-attn:       ; $(UV) python scripts/bench_attn.py
 bench-spec:       ; $(LOCK) $(UV) python scripts/bench_spec.py
 figures:          ; $(UV) python scripts/make_figures.py
 app:              ; ./scripts/start_app.sh
-paper:            ; cd report && latexmk -pdf -interaction=nonstopmode main.tex
+paper:            ; cd report && (command -v latexmk >/dev/null && latexmk -pdf -interaction=nonstopmode main.tex || $(HOME)/.local/bin/tectonic -X compile main.tex)
