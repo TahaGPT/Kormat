@@ -1,0 +1,21 @@
+% Written from results/eval/test_final/ft/predictions.jsonl (see docs/research/error_analysis.md)
+\begin{table*}[t]\centering\small
+\caption{Traced test-set errors of the fine-tuned model (gold $\rightarrow$ predicted label; evidence IDs gold / predicted). Categories: A = absence treated as proof, B = applicability collapsed to ``not excluded'', C = over-abstention on inferable facts, D = applicability vs.\ missing information, E = evidence error with a correct label.}\label{tab:errors}
+\begin{tabular}{@{}rllllll@{}}
+\toprule
+id & type & criterion (abridged) & gold $\rightarrow$ pred & evidence & cat. & diagnosis \\
+\midrule
+169 & excl & eGFR $<$ 30 ml/min & NEI $\rightarrow$ not excl. & [] / [] & A & renal function never reported; asserted ``not excluded'' \\
+174 & excl & previous axillary surgery & NEI $\rightarrow$ not excl. & [] / [] & A & silence on surgical history read as a negative \\
+683 & excl & previous tonsillectomy & N/A $\rightarrow$ not excl. & [] / [] & B & default answer instead of ``not applicable'' \\
+162 & incl & undergoing open AAA repair & not incl. $\rightarrow$ NEI & [] / [0,1,2] & C & \emph{contradictory} vascular history found but not used to rule out \\
+161 & incl & elective carotid endarterectomy & not incl. $\rightarrow$ NEI & [] / [] & C & acute presentation implies not elective; model abstains \\
+185 & incl & diagnosed with shock or ARDS & incl. $\rightarrow$ NEI & [2,3] / [0--3] & C & BP 80/60 + tachycardia = shock; no clinical inference \\
+176 & incl & no central venous catheterisation & incl. $\rightarrow$ NEI & [0] / [0] & C & right sentence; arterial vs.\ venous access not distinguished \\
+196 & excl & less than 18 years of age & not excl. $\rightarrow$ NEI & [0] / [] & C & age stated in sentence 0 but missed (\emph{missing-info} false alarm) \\
+422 & incl & if female, using birth control & N/A $\rightarrow$ NEI & [3] / [3] & D & ``no sexual partners'' makes it moot; read as missing \\
+322 & excl & pregnant / no contraception & not excl. $\rightarrow$ N/A & [0] / [] & D & 48-year-old man: annotation-convention ambiguity \\
+307 & incl & liver-damage types (volumetry) & NEI $\rightarrow$ NEI & [3] / [0--4] & E & correct label, whole note cited (low precision) \\
+\bottomrule
+\end{tabular}
+\end{table*}

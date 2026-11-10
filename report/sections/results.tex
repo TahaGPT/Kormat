@@ -18,7 +18,14 @@ Fig.~\ref{fig:train} shows the run that produced the adapter. Its configuration 
 % TODO-INTERPRET: P/R/F1, treatment of empty-gold records.
 
 \subsection{Error analysis}
-% TODO-INTERPRET: >=8 representative errors, contradictory cases, missing-information failures (docs/research/error_analysis.md).
+\maybeinput{tables/error_cases}
+On the test split the fine-tuned model made 55 label errors out of 206. Another 33 criteria had the right label but a different evidence set: in 19 the model cited sentences outside the expert set, in 17 it missed expert sentences, and some did both. No output was unparsable, and no cited ID was outside the note. Table~\ref{tab:errors} traces eleven distinct cases; the full list with sentence text is in \texttt{docs/research/error\_analysis.md}. Four patterns emerge.
+
+\textbf{(A) Absence treated as proof (28 errors).} \emph{Every} exclusion criterion whose expert label is ``not enough information'' was predicted ``not excluded''. When no sentence mentions the excluding condition (e.g.\ eGFR, prior axillary surgery), the model concludes the patient is not excluded, which is exactly the inference the task forbids. The training data explain the shortcut: 292 of the 388 training exclusion criteria are ``not excluded'', 218 of them without any evidence sentence, against only 65 ``not enough information''. \textbf{(B)} Nine ``not applicable'' exclusions collapse to the same default. Together, A and B make up 37 of the 55 errors and drive exclusion macro-F1 down. For a screening aid this is the unsafe direction, because missing information is hidden rather than flagged.
+
+\textbf{(C) Over-abstention on inferable facts (14).} The opposite failure appears on inclusion criteria that need clinical inference: blood pressure 80/60 with tachycardia means shock (case 185), and an acute femoral complication rules out an elective endarterectomy (161). Case 162 is \emph{contradictory}: the note describes a different vascular problem than the criterion. In several of these cases the model cites the right sentences but abstains. Its evidence localisation is therefore better than its judgement, so the explanation still directs the reviewer to the relevant text. Case 196 is a plain \emph{missing-information} false alarm: the age is stated, but the model misses it. \textbf{(D)} Four errors confuse ``not applicable'' with ``not enough information'' on conditional, sex-specific criteria, where expert conventions themselves vary (case 322).
+
+\textbf{Implication.} A cheap deterministic guard, downgrading an exclusion ``not excluded'' with \emph{empty} evidence to ``not enough information'', would target pattern A without retraining. Rebalancing the exclusion labels during training is the principled fix. We did not apply either to the reported numbers.
 
 \subsection{KV cache}
 \maybeinput{tables/kvcache}
