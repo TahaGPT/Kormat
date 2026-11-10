@@ -1,0 +1,241 @@
+{
+  "load_s": 15.3,
+  "info": {
+    "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+    "adapter": "arceus1rk/eligitrace-qwen2.5-1.5b-lora@2c3a46e",
+    "dtype": "float32"
+  },
+  "criteria": [
+    {
+      "type": "inclusion",
+      "text": "Patients of chronic stable angina with abnormal Exercise Myocardial Perfusion Spect Scan with reversible and partially reversible ischemic changes.",
+      "label": "not enough information",
+      "status": "ok",
+      "evidence_ids": [],
+      "evidence_text": {},
+      "hallucinated_ids": [],
+      "explanation": "No sentence in the note addresses this criterion, so the information is insufficient; absence of evidence is not treated as proof either way.",
+      "missing_information": true,
+      "raw_output": "{\"label\": \"not enough information\", \"evidence\": []}",
+      "mode": "kv_cached",
+      "timing": {
+        "prefill_ms": 3958.6437230027514,
+        "decode_ms": 6480.011639003351,
+        "n_prompt": 343,
+        "n_new": 15,
+        "tokens_per_s": 1.4369666858239198,
+        "peak_rss_mb": 8301.92578125,
+        "kv_cache_mb": 19.5234375,
+        "stats": {
+          "cache_update_calls": 420,
+          "per_iter": []
+        }
+      },
+      "gold_label_val": "not enough information"
+    },
+    {
+      "type": "inclusion",
+      "text": "Male and female",
+      "label": "included",
+      "status": "ok",
+      "evidence_ids": [
+        0
+      ],
+      "evidence_text": {
+        "0": "A 58-year-old African-American woman presents to the ER with episodic pressing/burning anterior chest pain that began two days earlier for the first time in her life."
+      },
+      "hallucinated_ids": [],
+      "explanation": "Sentence 0 states: 'A 58-year-old African-American woman presents to the ER with episodic pressing/burning anterior chest pain that began two days earlier for the first time in her life.'. On that basis the inclusion criterion is judged 'included'.",
+      "missing_information": false,
+      "raw_output": "{\"label\": \"included\", \"evidence\": [0]}",
+      "mode": "kv_cached",
+      "timing": {
+        "prefill_ms": 3645.9531569998944,
+        "decode_ms": 5870.497837000585,
+        "n_prompt": 322,
+        "n_new": 14,
+        "tokens_per_s": 1.4711366673170614,
+        "peak_rss_mb": 8301.93359375,
+        "kv_cache_mb": 18.3203125,
+        "stats": {
+          "cache_update_calls": 392,
+          "per_iter": []
+        }
+      },
+      "gold_label_val": "included"
+    },
+    {
+      "type": "inclusion",
+      "text": "Age 25 to 65 years",
+      "label": "included",
+      "status": "ok",
+      "evidence_ids": [
+        0
+      ],
+      "evidence_text": {
+        "0": "A 58-year-old African-American woman presents to the ER with episodic pressing/burning anterior chest pain that began two days earlier for the first time in her life."
+      },
+      "hallucinated_ids": [],
+      "explanation": "Sentence 0 states: 'A 58-year-old African-American woman presents to the ER with episodic pressing/burning anterior chest pain that began two days earlier for the first time in her life.'. On that basis the inclusion criterion is judged 'included'.",
+      "missing_information": false,
+      "raw_output": "{\"label\": \"included\", \"evidence\": [0]}",
+      "mode": "kv_cached",
+      "timing": {
+        "prefill_ms": 3713.84386200225,
+        "decode_ms": 6029.0926009984105,
+        "n_prompt": 328,
+        "n_new": 14,
+        "tokens_per_s": 1.4369384479890404,
+        "peak_rss_mb": 8301.9375,
+        "kv_cache_mb": 18.6484375,
+        "stats": {
+          "cache_update_calls": 392,
+          "per_iter": []
+        }
+      },
+      "gold_label_val": "included"
+    },
+    {
+      "type": "inclusion",
+      "text": "Patient must understand and be willing, able and likely to comply with all study procedures and restrictions and comprehends the diary cards.",
+      "label": "included",
+      "status": "ok",
+      "evidence_ids": [
+        8
+      ],
+      "evidence_text": {
+        "8": "The patient will provide informed consent, and will comply with the trial protocol without any practical issues."
+      },
+      "hallucinated_ids": [],
+      "explanation": "Sentence 8 states: 'The patient will provide informed consent, and will comply with the trial protocol without any practical issues.'. On that basis the inclusion criterion is judged 'included'.",
+      "missing_information": false,
+      "raw_output": "{\"label\": \"included\", \"evidence\": [8]}",
+      "mode": "kv_cached",
+      "timing": {
+        "prefill_ms": 3895.4426550044445,
+        "decode_ms": 5886.048972999561,
+        "n_prompt": 343,
+        "n_new": 14,
+        "tokens_per_s": 1.4312745471169837,
+        "peak_rss_mb": 8301.95703125,
+        "kv_cache_mb": 19.46875,
+        "stats": {
+          "cache_update_calls": 392,
+          "per_iter": []
+        }
+      },
+      "gold_label_val": "included"
+    }
+  ],
+  "aggregate": {
+    "outcome": "Undetermined, information missing",
+    "reason": "No disqualifying criterion was found, but some criteria lack information (rule 3).",
+    "rule": "1. Any exclusion criterion labelled \"excluded\" -> Likely ineligible. 2. Else, any inclusion criterion labelled \"not included\" -> Likely ineligible. 3. Else, any criterion labelled \"not enough information\" (or an unparseable/INVALID answer) -> Undetermined, information missing. 4. Else -> Potentially eligible. \"not applicable\" criteria are ignored in the decision but still listed. This is a preliminary screening aid produced by a model; it is not ground truth and not an enrollment decision.",
+    "triggering": [
+      {
+        "index": null,
+        "text": "Patients of chronic stable angina with abnormal Exercise Myocardial Perfusion Spect Scan with reversible and partially reversible ischemic changes.",
+        "label": "not enough information"
+      }
+    ],
+    "missing_information": [
+      {
+        "index": null,
+        "text": "Patients of chronic stable angina with abnormal Exercise Myocardial Perfusion Spect Scan with reversible and partially reversible ischemic changes.",
+        "type": "inclusion"
+      }
+    ],
+    "ignored_not_applicable": [],
+    "counts": {
+      "included": 3,
+      "not enough information": 1
+    }
+  },
+  "lab": [
+    {
+      "mode": "no_cache",
+      "equal_to_kv": true,
+      "timing": {
+        "prefill_ms": 3881.9628409983125,
+        "decode_ms": 68866.490205015,
+        "n_prompt": 343,
+        "n_new": 15,
+        "tokens_per_s": 0.20618995142773025,
+        "peak_rss_mb": 8309.01953125,
+        "kv_cache_mb": null,
+        "stats": {}
+      }
+    },
+    {
+      "mode": "kv_cached",
+      "equal_to_kv": true,
+      "timing": {
+        "prefill_ms": 4798.267773003317,
+        "decode_ms": 6207.758279997506,
+        "n_prompt": 343,
+        "n_new": 15,
+        "tokens_per_s": 1.3628897412895191,
+        "peak_rss_mb": 8309.01953125,
+        "kv_cache_mb": 19.5234375,
+        "stats": {
+          "cache_update_calls": 420,
+          "per_iter": []
+        }
+      }
+    },
+    {
+      "mode": "speculative",
+      "equal_to_kv": true,
+      "timing": {
+        "prefill_ms": 5006.345287998556,
+        "decode_ms": 4014.6686240041163,
+        "n_prompt": 343,
+        "n_new": 15,
+        "tokens_per_s": 1.6627842664162333,
+        "peak_rss_mb": 8309.5703125,
+        "kv_cache_mb": 27.8671875,
+        "stats": {
+          "gamma": 4,
+          "iterations": 3,
+          "drafted": 12,
+          "accepted": 11,
+          "acceptance_rate": 0.9166666666666666,
+          "mean_accepted_per_iter": 3.6666666666666665,
+          "kv_target_mb": 19.5234375,
+          "kv_draft_mb": 8.34375,
+          "per_iter": [
+            {
+              "drafted": 4,
+              "accepted": 3
+            },
+            {
+              "drafted": 4,
+              "accepted": 4
+            },
+            {
+              "drafted": 4,
+              "accepted": 4
+            }
+          ]
+        }
+      }
+    },
+    {
+      "mode": "hf_generate",
+      "equal_to_kv": true,
+      "timing": {
+        "prefill_ms": 4932.386571003008,
+        "decode_ms": 6201.861978996021,
+        "n_prompt": 343,
+        "n_new": 15,
+        "tokens_per_s": 1.3471946429650439,
+        "peak_rss_mb": 8320.58984375,
+        "kv_cache_mb": null,
+        "stats": {
+          "library": "transformers.generate",
+          "per_iter": []
+        }
+      }
+    }
+  ]
+}

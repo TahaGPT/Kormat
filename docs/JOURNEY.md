@@ -167,3 +167,9 @@ All speculative outputs were token-identical to the baseline. Baseline 1.37 tok/
 **Fix:** the runner now passes `repetition_penalty=1.0, temperature=None, top_p=None, top_k=None` explicitly and records them in config.json. The partial run is kept as `results/eval/ablation_val_ft_reppen1.1_partial/` (penalty 1.1 vs plain greedy on the same rows).
 **Order change (deadline):** ft-test → base-test → ft-val → base-val. The configuration (configs/final.yaml) was frozen before any test access, and nothing is tuned on validation, so running test first does not leak information.
 **Paper hook:** §IV decoding settings; Limitations / lessons learned.
+
+## 2026-11-10 · TGA-41 · real-model application smoke run
+**Goal:** verify the real engine end to end. **Machine:** CPU laptop, under .model.lock, other agents' evaluation running concurrently (timings inflated) **Run(s):** results/app/20261110-223158_122e58a/
+**What we did:** loaded target+LoRA+draft (15.3 s, weights cached), screened 4 val criteria with kv_cached (~9.5-10.4 s each), ran the lab on one criterion (24 new tokens): no_cache, kv_cached, speculative (gamma 4), hf_generate. Then drove the live UI at :8020 with scripts/app_screenshots.py (report/figures/app_real_*.png).
+**Numbers:** all 3 other modes token-identical to kv_cached; speculative acceptance 91.7%; decode ms no_cache 68866 / kv 6208 / spec 4015 / hf 6202 (single run, contended CPU, not a benchmark).
+**Paper hook:** application screenshots figure; stored-study panel for real benchmarks.
