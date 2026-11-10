@@ -1,0 +1,65 @@
+{
+  "model": "tiny_qwen (random)",
+  "cases": [
+    {
+      "prompt_len": 5,
+      "max_logit_diff": 1.7881393432617188e-07,
+      "mean_logit_diff": 2.158170353538935e-08,
+      "logit_abs_max": 0.5764262676239014,
+      "greedy_tokens_identical": true,
+      "new_tokens": [
+        229,
+        631,
+        735,
+        413,
+        229,
+        909,
+        859,
+        120,
+        558,
+        67,
+        694,
+        229
+      ],
+      "tiled_calls": 26
+    },
+    {
+      "prompt_len": 40,
+      "max_logit_diff": 2.086162567138672e-07,
+      "mean_logit_diff": 2.3623259792771023e-08,
+      "logit_abs_max": 0.6744415760040283,
+      "greedy_tokens_identical": true,
+      "new_tokens": [
+        278,
+        32,
+        266,
+        39,
+        730,
+        82,
+        57,
+        249,
+        325,
+        301,
+        761,
+        229
+      ],
+      "tiled_calls": 26
+    }
+  ],
+  "env": {
+    "python": "3.10.12",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "processor": "x86_64",
+    "hostname": "TahaGPT",
+    "cpu_count": 8,
+    "ram_total_gb": 15.46,
+    "ram_available_gb": 1.37,
+    "torch": "2.5.1+cpu",
+    "torch_threads": 4,
+    "cuda_available": false,
+    "transformers": "4.46.3",
+    "peft": "0.13.2"
+  },
+  "block": 16,
+  "variant": "kv_blocked"
+}
