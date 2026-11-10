@@ -167,7 +167,7 @@ $("#runatt").onclick = async () => {
 async function loadStored() {
   try {
     const d = await api("/api/stored");
-    $("#stored").innerHTML = Object.entries(d).map(([k, v]) => v.data ? `<details open><summary>${esc(k)} <span class="badge">run ${esc(v.run_id)}</span></summary><pre>${esc(JSON.stringify(v.data, null, 2).slice(0, 3000))}</pre></details>`
+    $("#stored").innerHTML = Object.entries(d).map(([k, v]) => v.data ? `<details><summary>${esc(k)} <span class="badge">run ${esc(v.run_id)}</span></summary><pre>${esc(JSON.stringify(v.data, null, 2).slice(0, 3000))}</pre></details>`
       : `<p><b>${esc(k)}</b>: <span class="muted">not available yet</span></p>`).join("");
   } catch (e) { $("#stored").textContent = e.message; }
 }
