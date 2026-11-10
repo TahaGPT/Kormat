@@ -37,6 +37,27 @@ def set_threads() -> int:
     return torch.get_num_threads()
 
 
+def adapter_config():
+    """LoraConfig for the shared adapter, readable by our pinned peft (0.13.2).
+
+    The adapter was saved with peft 0.21.2, whose config has extra keys (alora_invocation_tokens,
+    lora_bias, use_qalora, ...). Every such key in this adapter is null/false/default, so dropping
+    the ones our LoraConfig does not know leaves the adapter's behaviour unchanged; the dropped keys
+    are recorded in `.dropped_keys` for provenance.
+    """
+    import dataclasses
+    import json
+
+    from peft import LoraConfig
+
+    raw = json.loads((ADAPTER_DIR / "adapter_config.json").read_text())
+    known = {f.name for f in dataclasses.fields(LoraConfig)}
+    kept = {k: v for k, v in raw.items() if k in known}
+    cfg = LoraConfig(**kept)
+    cfg.dropped_keys = {k: raw[k] for k in raw if k not in known}
+    return cfg
+
+
 def _load(model_id: str, dtype: torch.dtype, attn: str):
     tok = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=dtype, attn_implementation=attn)
@@ -52,7 +73,7 @@ def load_target(finetuned: bool = True, merge: bool = True, dtype: torch.dtype =
     if finetuned:
         from peft import PeftModel
 
-        model = PeftModel.from_pretrained(model, str(ADAPTER_DIR))
+        model = PeftModel.from_pretrained(model, str(ADAPTER_DIR), config=adapter_config())
         adapter = f"{ADAPTER_REPO}@{ADAPTER_REVISION[:7]}"
         if merge:
             model = model.merge_and_unload()
