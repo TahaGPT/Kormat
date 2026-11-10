@@ -17,7 +17,7 @@ for r in rows:
     res = e.screen_one(sents, r["criterion_type"], r["criterion_text"], "kv_cached")
     res["gold_label_val"] = r["label"]; out["criteria"].append(res)
 out["aggregate"] = aggregate(out["criteria"])
-lab = e.lab(sents, rows[0]["criterion_type"], rows[0]["criterion_text"], ["no_cache", "kv_cached", "speculative", "hf_generate"], 4, 64)
+lab = e.lab(sents, rows[0]["criterion_type"], rows[0]["criterion_text"], ["no_cache", "kv_cached", "speculative", "hf_generate"], 4, 24)
 ref = next(x for x in lab if x["mode"] == "kv_cached")["tokens"]
 out["lab"] = [{"mode": x["mode"], "equal_to_kv": x["tokens"] == ref, "timing": x["timing"]} for x in lab]
 d = RESULTS / "app" / f"{time.strftime('%Y%m%d-%H%M%S')}_{git_sha()}"; d.mkdir(parents=True, exist_ok=True)
