@@ -138,7 +138,7 @@ $("#runlab").onclick = async () => {
   const c = crits[+$("#labcrit").value]; showErr($("#laberr"));
   $("#runlab").disabled = true; $("#labstat").innerHTML = '<span class="spinner"></span> running (the CPU is busy, no_cache is slow)...';
   try {
-    const d = await post("/api/lab", { note: $("#note").value, criterion: c, modes, gamma: +$("#labgamma").value || 4 });
+    const d = await post("/api/lab", { note: $("#note").value, criterion: c, modes, gamma: +$("#labgamma").value || 4, max_new_tokens: +$("#labmax").value || 64 });
     renderLab(d); $("#labstat").textContent = "";
   } catch (e) { showErr($("#laberr"), e); $("#labstat").textContent = ""; }
   $("#runlab").disabled = false;
