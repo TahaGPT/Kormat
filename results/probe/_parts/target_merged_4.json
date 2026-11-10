@@ -1,0 +1,1 @@
+[{"config": "target_merged", "component": "target", "threads": 4, "load_s": 10.3, "rss_after_load_mb": 6337, "peak_rss_mb": 9173, "prefill_256_ms": 5004, "prefill_512_ms": 9287, "prefill_1024_ms": 18922, "decode_ms_per_token": 496.3}]

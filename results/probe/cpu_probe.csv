@@ -1,0 +1,7 @@
+config,component,threads,load_s,rss_after_load_mb,peak_rss_mb,prefill_256_ms,prefill_512_ms,prefill_1024_ms,decode_ms_per_token
+target_base,target,4,3.8,6229.0,9173.0,4123.0,8371.0,16594.0,515.0
+target_merged,target,4,10.3,6337.0,9173.0,5004.0,9287.0,18922.0,496.3
+draft,draft,4,3.4,2225.0,3166.0,1308.0,2840.0,5579.0,164.5
+target+draft,target,4,9.5,8169.0,9173.0,4108.0,8483.0,17069.0,444.2
+target+draft,draft,4,9.5,8169.0,9173.0,1237.0,2587.0,5262.0,150.8
+target_merged,target,8,8.6,6336.0,9173.0,4651.0,9221.0,20550.0,488.9
