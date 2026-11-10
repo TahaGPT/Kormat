@@ -1,0 +1,25 @@
+{
+  "device": "cpu",
+  "dtype": "torch.float32",
+  "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "n_examples": 16,
+  "example_token_len_min_max": [
+    259,
+    276
+  ],
+  "optimizer_steps": 30,
+  "micro_batches": 30,
+  "grad_accum": 1,
+  "loss_first": 0.10640300065279007,
+  "loss_last": 0.12580659985542297,
+  "loss_mean_first_k": 0.5193767637014389,
+  "loss_mean_last_k": 0.11632048338651657,
+  "k": 5,
+  "sec_per_step_mean": 5.088333333333335,
+  "sec_per_microbatch_mean": 5.115514579000107,
+  "peak_rss_mb": 4926,
+  "wall_s": 153.5,
+  "adapter_dir": "/home/tahagpt/Documents/genai/Kormat/checkpoints/smoke",
+  "reload_ok": true,
+  "sample_output": "{\"label\": \"not enough information\", \"evidence\": [0]}"
+}
