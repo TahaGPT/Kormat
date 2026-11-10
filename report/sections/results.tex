@@ -59,5 +59,14 @@
 With $\alpha\approx0.83$ and $\gamma=4$, the theory predicts $1.5\times$ with $c$ alone and about $1.2\times$ once the measured verification cost is included, in line with the measured decode-only speed-up. Speculative decoding would pay off for longer outputs and on hardware where verifying several tokens costs about as much as decoding one.
 
 \subsection{Application}
-% \includegraphics[width=\columnwidth]{figures/app_screenshot.png}
-% TODO-INTERPRET: screenshots with explanation; measured request latency.
+\begin{figure}[t]\centering
+\includegraphics[width=\columnwidth]{figures/app_real_results.png}
+\caption{Kormat screening a validation patient with the fine-tuned model (real engine, KV-cached decoding). The second criterion is selected and its cited sentence~0 is highlighted in the numbered note. The missing-information list and the rule-based preliminary outcome are shown, together with the disclaimer banner.}\label{fig:app}
+\end{figure}
+\begin{figure}[t]\centering
+\includegraphics[width=\columnwidth]{figures/app_real_lab.png}
+\caption{Inference lab: the same criterion decoded live with no cache, our KV cache and speculative decoding ($\gamma=4$). The lab shows timings, memory, acceptance rate and token equality against the KV-cached reference.}\label{fig:lab}
+\end{figure}
+Fig.~\ref{fig:app} shows the screening workflow on the real fine-tuned model. A user pastes a note (free text is split into numbered sentences), enters or pastes the criteria (or fetches them by NCT ID), and runs the screen. Each criterion row shows the label, the cited IDs and an explanation quoted only from those sentences, and clicking a row highlights the evidence. In a recorded real-engine session (\texttt{results/app/*/real\_smoke.json}), with the evaluation running concurrently on the same CPU, the model loaded in 15\,s from the local cache. Each criterion took 9.5--10.4\,s, and all four criteria of the sample patient matched the expert labels. The patient--trial outcome is an explicit rule (any exclusion met or inclusion unmet $\Rightarrow$ likely ineligible; otherwise any missing information $\Rightarrow$ undetermined; otherwise potentially eligible). The app presents it as a preliminary aggregation, never as ground truth.
+
+The lab (Fig.~\ref{fig:lab}) re-runs any criterion live under each decoding mode. For a 24-token output, no-cache decoding took 68.9\,s, KV-cached decoding 6.2\,s and speculative decoding 4.0\,s, with an acceptance rate of 91.7\%. All three produced the same tokens, which the lab confirms with an equality badge. On this longer output speculative decoding did help, consistent with the analysis above: the gain appears once decoding, not prefill, dominates. Invalid inputs (empty note, too many criteria, malformed criteria, the model still loading, an offline NCT fetch) return explanatory messages and the app keeps working; the automated tests cover each case. Reports export as print-ready HTML and JSON with provenance (model and adapter revision, adapter hash, git commit, decoding settings) and persist across restarts.
