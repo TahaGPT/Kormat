@@ -2,9 +2,11 @@
 \label{sec:limits}
 \begin{itemize}
 \item \textbf{Small data.} 53 patients, 8 in test; confidence intervals are wide and per-class results for rare labels rest on few examples.
-\item \textbf{Shared adapter.} The adapter was trained in a joint GPU session; we neither re-trained it independently nor ran seeds or ablations of the training, so we cannot separate training-recipe effects from base-model effects. The other candidate models were compared by configuration arithmetic only.
+\item \textbf{Shared adapter.} The adapter was trained in a joint GPU session; we neither re-trained it independently nor ran seeds or ablations of the training, so we cannot separate training-recipe effects from base-model effects. Our own training script is shown to run end to end only on a short CPU smoke run with the 0.5B model. The other candidate models were compared by configuration arithmetic only.
 \item \textbf{Criterion-level labels only.} The dataset has no patient--trial ground truth; our aggregation is rule based and unvalidated against experts.
-\item \textbf{Length handling.} Over-long examples were dropped from training (never cut); at inference very long notes can exceed the budget and evidence may be lost. \todo{state counts from the token-length analysis}
+\item \textbf{Length handling.} In this dataset the longest prompt plus target is 622 tokens, so with a 1{,}024-token budget no example was truncated and no gold evidence was lost. Unseen notes in the application can be much longer; our policy then drops whole sentences, which could remove evidence. The app warns the user when this happens.
+\item \textbf{CPU-only evaluation.} Generation on a 4-core laptop CPU takes about 8\,s per criterion, which ruled out repeated evaluation runs. Some systems benchmarks were run on reduced grids (e.g.\ the no-cache path only up to 64 new tokens) and with 3 repeats, and some timings were taken while other jobs shared the CPU.
+\item \textbf{Decoding pitfall.} Our first validation pass silently inherited a repetition penalty from the model's default generation configuration. We caught it and re-ran, but it shows how library defaults can change ``greedy'' results.
 \item \textbf{CPU-specific systems results.} Tiled attention and speculative decoding are known GPU-driven speed-ups; our timings are for one laptop CPU with eager PyTorch and do not generalise to GPUs or other CPUs.
 \item \textbf{Not clinical software.} The system is a research prototype; outputs must not be used for real patient decisions.
 \end{itemize}
