@@ -37,6 +37,7 @@ Table~\ref{tab:models} compares four open-weight decoder candidates using the \t
 \caption{Candidate open decoder models (config.json; memory by arithmetic, GiB).}
 \label{tab:models}
 \centering\scriptsize
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
  & Qwen2.5-1.5B & Qwen3-1.7B & Llama-3.2-1B$^{\ast}$ & SmolLM2-1.7B \\
@@ -53,7 +54,7 @@ Licence & Apache-2.0 & Apache-2.0 & Llama 3.2 & Apache-2.0 \\
 fp32 / bf16 / 4-bit & 5.75/2.88/0.72 & 7.57/3.78/0.95 & 4.60/2.30/0.58 & 6.38/3.19/0.80 \\
 KV B/token (bf16) & 28,672 & 114,688 & 32,768 & 196,608 \\
 \bottomrule
-\end{tabular}\\[2pt]
+\end{tabular}}\\[2pt]
 {\scriptsize $^{\ast}$ gated; values from public mirror. $^{\dagger}$ safetensors total incl.\ embeddings (card: 1.7B).}
 \end{table}
 % TODO-INTERPRET: Table models: GQA drives the KV-bytes column; why CPU RAM (15 GB) rules out larger caches; weights fit.
