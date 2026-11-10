@@ -1,0 +1,20 @@
+# CPU smoke test of the trainer on the 0.5B model (NOT the final adapter).
+name: cpu_smoke
+base_model: Qwen/Qwen2.5-0.5B-Instruct
+lora: {r: 16, alpha: 32, dropout: 0.05, target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]}
+epochs: 2
+max_steps: 30                 # optimizer steps (accum 1 => 30 micro-steps)
+lr: 2.0e-4
+warmup_ratio: 0.05
+grad_accum: 1
+max_len: 1024
+grad_checkpointing: true
+seed: 42
+data: {split: train, subset: 16, pool: 200}   # the 16 shortest of the first 200 train records (keeps CPU time bounded)
+out_dir: results/finetune/smoke
+adapter_out: checkpoints/smoke
+overfit:
+  name: cpu_overfit
+  max_steps: 40
+  lr: 3.0e-4
+  data: {subset: 8}

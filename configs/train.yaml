@@ -1,0 +1,16 @@
+# Configuration of the shared adapter's training run (joint GPU session, disclosed). Reproduced here as an executable script.
+name: shared_run_config
+base_model: Qwen/Qwen2.5-1.5B-Instruct
+lora: {r: 16, alpha: 32, dropout: 0.05, target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]}
+epochs: 3
+lr: 2.0e-4
+lr_scheduler: cosine
+warmup_ratio: 0.05
+micro_batch_size: 1
+grad_accum: 16
+max_len: 1024
+grad_checkpointing: true
+seed: 42
+data: {split: train}          # completion-only loss, kormat.data.sft.build_sft
+out_dir: results/finetune/rerun
+adapter_out: checkpoints/rerun
