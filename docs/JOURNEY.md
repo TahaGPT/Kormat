@@ -116,3 +116,9 @@ Block sweep at L=2048 (loops): 16 -> 7.97 s, 64 -> 1.04 s, 256 -> 0.61 s (12 -> 
 - scripts/capture_env.py -> results/env/cpu_laptop.json (i5-10310U, 4C/8T, 15.5 GB, torch 2.5.1 CPU).
 - scripts/probe_cpu.py (locked, fresh process per config), results/probe/cpu_probe.csv + summary.md. Merged target fp32: RSS 6.3 GB after load, 9.2 GB peak during load; draft 2.2 GB (3.2 GB peak); target+draft 8.2 GB resident. Prefill@512 about 9 s, decode about 0.5 s/token (target), 0.16 s/token (draft). 4 vs 8 threads differ by 1.1 % (noise) -> KORMAT_NUM_THREADS=4.
 - Projection: 412 val+test criteria x about 21 s = about 2.4 h per model pass (assumes 512-token prompt, 24-token answer; timings taken while other agents were running, so indicative). A first probe attempt died at the target+draft step under RAM pressure (nothing recorded); the rerun succeeded.
+
+## TGA-20 Frozen model configuration (model agent)
+- configs/final.yaml pins target/draft snapshot shas, adapter repo@revision and the sha256 of adapter_model.safetensors (eb1843b2...), fp32, greedy, max_new_tokens 48.
+- Finding: the base generation_config.json ships repetition_penalty=1.1 and sampling defaults; model.generate(do_sample=False) would still apply the penalty. Our checks pass repetition_penalty=1.0; any generate() caller must do the same (hand-written decode loops are unaffected).
+- results/finetune/merge_check.json: 5 train prompts, merged vs unmerged greedy outputs identical, max |dlogit| 5.8e-5 (fp32).
+- results/finetune/prompt_contract_check.json: 5 train prompts, 5/5 valid {"label","evidence"} JSON with an allowed label (validity only, not accuracy; the 5 shortest of the first 60 train records, label agreement is low in this sample and says nothing about the val metric).

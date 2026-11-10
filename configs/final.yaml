@@ -1,0 +1,25 @@
+# Frozen model configuration used by every evaluation, benchmark and the app.
+target:
+  id: Qwen/Qwen2.5-1.5B-Instruct
+  revision: 989aa7980e4cf806f80c7fef2b1adb7bc71aa306   # HF snapshot resolved from the local cache
+draft:
+  id: Qwen/Qwen2.5-0.5B-Instruct
+  revision: 7ae557604adf67be50417f59c2c2f167def9a775
+adapter:
+  repo: arceus1rk/eligitrace-qwen2.5-1.5b-lora
+  revision: 2c3a46e2a52ad90ecec75ffd5aa3380d3c24ceaa
+  local_dir: checkpoints/adapter
+  weights_file: adapter_model.safetensors
+  sha256: eb1843b2a2921a70508a03bbd18a551e75709b47babe33fca4a74d36a87144ad
+  merge: true            # merged for inference; equivalence in results/finetune/merge_check.json
+  provenance: joint GPU training session (disclosed), see results/finetune/shared_run/README.md
+dtype: float32
+device: cpu
+num_threads: 4            # KORMAT_NUM_THREADS, see results/probe/summary.md
+decoding:
+  strategy: greedy
+  max_new_tokens: 48
+  repetition_penalty: 1.0   # base generation_config.json ships 1.1 (+ sampling); override, pure greedy
+  stop_token_ids_from: kormat.modeling.eos_ids   # tokenizer eos + generation_config eos + <|im_end|>
+  stop_tokens: ["<|im_end|>", "<|endoftext|>"]
+prompt_contract: kormat.prompting.template
