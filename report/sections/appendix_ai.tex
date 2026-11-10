@@ -1,0 +1,9 @@
+\section{Use of AI Tools}
+\label{app:ai}
+\textbf{Tools.} This project was planned, coded and drafted with Claude Code (a lead agent, Claude Opus 5.5, coordinating specialist agents running Claude Sonnet 5.5) working in the repository under the author's direction. AI assistance covered task planning, literature search and drafting, source code, tests, the web application, LaTeX and figure scripts.
+
+\textbf{Verification.} Every bibliographic entry was opened on its arXiv, publisher or Crossref page before inclusion; model facts come from the Hugging Face \texttt{config.json} files and model cards; all reported numbers are produced by scripts that write run records with the commit SHA, not typed by hand; implementations are checked against reference ones (attention against softmax attention, speculative output against greedy output) by tests; the split is checked for patient leakage. \todo{the author states which outputs they personally reviewed, ran and can explain.}
+
+\textbf{Joint training disclosure.} The LoRA adapter (\texttt{arceus1rk/eligitrace-qwen2.5-1.5b-lora}) was trained in a joint session on a shared GPU with M.\ Ruhan Kamran (23i-0062), because the author's laptop has no GPU. It is a disclosed shared artefact. No code, results, figures or text were copied from the other student's repository.
+
+\textbf{Limits of AI use.} AI-generated text and code may contain errors; claims in this report are limited to what the cited sources and our measurements support.

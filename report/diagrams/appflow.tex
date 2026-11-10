@@ -1,0 +1,10 @@
+\begin{tikzpicture}[node distance=4mm, box/.style={draw,rounded corners,align=center,font=\scriptsize,minimum height=6.5mm,text width=1.7cm,inner sep=2pt}, arr/.style={-{Latex[length=1.6mm]}}]
+\node[box] (u) {Browser: note + criteria};
+\node[box,right=of u] (api) {FastAPI endpoint};
+\node[box,right=of api] (sp) {Sentence split + prompt};
+\node[box,below=of sp] (g) {Decode (cache/spec.)};
+\node[box,left=of g] (pa) {Parse JSON, validate IDs};
+\node[box,left=of pa] (ag) {Rule-based aggregation};
+\draw[arr] (u)--(api); \draw[arr] (api)--(sp); \draw[arr] (sp)--(g); \draw[arr] (g)--(pa); \draw[arr] (pa)--(ag);
+\draw[arr] (ag.north) -- ++(0,4mm) -| (u.south);
+\end{tikzpicture}

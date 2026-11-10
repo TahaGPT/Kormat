@@ -1,0 +1,13 @@
+\begin{tikzpicture}[node distance=4mm and 5mm, box/.style={draw,rounded corners,align=center,font=\scriptsize,minimum height=7mm,inner sep=2pt,text width=1.55cm}, arr/.style={-{Latex[length=1.6mm]}}]
+\node[box] (d) {TrialGPT annotations};
+\node[box,right=of d] (s) {Patient-grouped split 37/8/8};
+\node[box,right=of s] (p) {Prompt contract + SFT encode};
+\node[box,below=of p] (l) {LoRA adapter (joint GPU run)};
+\node[box,left=of l] (m) {Qwen2.5-1.5B base};
+\node[box,left=of m] (e) {Eval: label, evidence, errors};
+\node[box,below=of e] (k) {KV-cache decoder + tiled attention};
+\node[box,right=of k] (sp) {Speculative decoder (0.5B draft)};
+\node[box,right=of sp] (a) {Kormat web app};
+\draw[arr] (d)--(s); \draw[arr] (s)--(p); \draw[arr] (p)--(l); \draw[arr] (m)--(l);
+\draw[arr] (m)--(e); \draw[arr] (e)--(k); \draw[arr] (k)--(sp); \draw[arr] (sp)--(a);
+\end{tikzpicture}

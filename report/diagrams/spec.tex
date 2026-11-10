@@ -1,0 +1,9 @@
+\begin{tikzpicture}[node distance=4mm, box/.style={draw,rounded corners,align=center,font=\scriptsize,minimum height=6.5mm,text width=1.7cm,inner sep=2pt}, arr/.style={-{Latex[length=1.6mm]}}]
+\node[box] (d) {Draft 0.5B proposes $k$ tokens greedily};
+\node[box,right=of d] (v) {Target 1.5B scores prefix + $k$ in one pass};
+\node[box,right=of v] (c) {Accept longest matching prefix};
+\node[box,below=of c] (r) {Rollback both caches to accepted length};
+\node[box,left=of r] (b) {Append target's own next token};
+\draw[arr] (d)--(v); \draw[arr] (v)--(c); \draw[arr] (c)--(r); \draw[arr] (r)--(b);
+\draw[arr] (b.west) -- ++(-3mm,0) |- (d.west);
+\end{tikzpicture}

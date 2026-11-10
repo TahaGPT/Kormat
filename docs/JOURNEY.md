@@ -65,3 +65,9 @@ Board: https://synverk.abdulhaque.dev/projects/aee8a2fc-a70e-4570-8c66-cfdc59bc0
 **What we tried:** parse.py (think/fence/single-quote/synonym handling, type-mismatch -> INVALID, hallucinated ids split out); classification.py (fixed label lists, INVALID predicted-only column, bootstrap CI, confusion heatmaps); evidence.py (explicit empty-set rules, four-cell counts); explain.py (explanations only from cited sentences); run.py (resumable per-row jsonl, sealed test split); errors.py (auto-tagging for TGA-23).
 **Numbers:** 17 unit tests incl. hand-computed toy metrics and sklearn cross-check pass; real-model numbers pending smoke run.
 **What failed / surprised us:** loading the shared adapter with peft 0.13.2 raised TypeError on unknown LoraConfig key `alora_invocation_tokens` (adapter saved by a newer peft).
+
+## 2026-11-10 · TGA-43/44 · IEEE LaTeX skeleton and methods sections
+**Goal:** rubric H1 scaffold. **What we did:** report/main.tex (IEEEtran conference), sections/*.tex, five TikZ diagrams (pipeline, KV flow, tile loop, speculative loop, app flow), Algorithm 1 (tiled online softmax) and Algorithm 2 (greedy speculative), AI-use appendix with joint-training disclosure, Introduction / Related Work / Methods / Experimental Setup written from the code. Generated tables load via \maybeinput so missing ones show a red TODO instead of breaking the build.
+**What failed / surprised us:** no TeX distribution on the laptop (pdflatex/latexmk not found), so the paper is NOT compiled yet; brace/env balance and cite-key coverage were checked by script. Use Overleaf (upload report/) or install TeX Live, then `cd report && make`.
+**Open:** Results section is a skeleton; methods text must be re-checked against the final code (spec decoder, app, eval evidence rules) and the shared run's training logs.
+**Paper hook:** whole report.

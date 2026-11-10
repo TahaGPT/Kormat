@@ -1,0 +1,9 @@
+\begin{tikzpicture}[node distance=4mm, box/.style={draw,rounded corners,align=center,font=\scriptsize,minimum height=6.5mm,text width=1.7cm,inner sep=2pt}, arr/.style={-{Latex[length=1.6mm]}}]
+\node[box] (pf) {Prefill: all $n$ prompt tokens};
+\node[box,right=of pf] (w) {Write K,V to \texttt{buf[:, :, 0:n]}};
+\node[box,right=of w] (dec) {Decode: 1 token, attend to \texttt{buf[:len]}};
+\node[box,below=of dec] (app) {Append K,V at \texttt{len}; \texttt{len}$\mathrel{+}=1$};
+\node[box,left=of app] (rb) {Rollback: \texttt{crop(len')} moves the integer only};
+\draw[arr] (pf)--(w); \draw[arr] (w)--(dec); \draw[arr] (dec)--(app); \draw[arr] (app)--(rb);
+\draw[arr] (app.south) -- ++(0,-4mm) -| node[pos=.25,below,font=\scriptsize]{next token} (dec.south east);
+\end{tikzpicture}
