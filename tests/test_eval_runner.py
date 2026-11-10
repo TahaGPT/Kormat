@@ -36,3 +36,25 @@ def test_end_to_end_resume(tmp_path):
               "latency_ms", "n_prompt_tokens", "n_new_tokens", "hallucinated_ids", "evidence_text"]:
         assert k in row
     assert (out / "metrics.json").exists() and (out / "confusion_overall.pdf").exists()
+
+
+@pytest.mark.slow
+def test_prefix_cache_equivalence_tiny():
+    import torch
+    from kormat.eval.prefix_check import check
+    tok = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-0.5B-Instruct")
+    ld = Loaded(tiny_qwen(vocab=len(tok)), tok, "tiny", "tiny", None, torch.float32)
+    recs = _recs() + [dict(_recs()[0], annotation_id="b0", patient_id="q", criterion_text="other crit")]
+    res = check(ld, recs)
+    assert res["all_match"] and res["fallbacks"] == 0 and res["reused"] == 2 and res["n"] == 4
+
+
+@pytest.mark.slow
+def test_chunk(tmp_path):
+    import torch
+    tok = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-0.5B-Instruct")
+    ld = Loaded(tiny_qwen(vocab=len(tok)), tok, "tiny", "tiny", None, torch.float32)
+    m = run_eval(_recs(), ld, tmp_path, "val", "t", n_boot=5, chunk=2, prefix_cache=True)
+    assert m["n"] == 2 and not m["complete"]
+    m = run_eval(_recs(), ld, tmp_path, "val", "t", n_boot=5, chunk=2, prefix_cache=True)
+    assert m["n"] == 3 and m["complete"]
