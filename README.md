@@ -1,4 +1,4 @@
-<p align="center"><img src="assets/logo.png" alt="Kormat" width="420"></p>
+<p align="center"><img src="assets/logo_transparent.png" alt="Kormat" width="480"></p>
 
 # Kormat: evidence-traced clinical-trial eligibility screening
 
