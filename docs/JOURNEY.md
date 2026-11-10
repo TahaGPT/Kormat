@@ -59,3 +59,9 @@ Board: https://synverk.abdulhaque.dev/projects/aee8a2fc-a70e-4570-8c66-cfdc59bc0
 **What we tried:** allow-listed load of ncbi/TrialGPT-Criterion-Annotations (rev 1cfcafde), patient split seed 42, numbered-note parser + pysbd splitter, SFT builder with completion-only mask, golden prompt test.
 **Numbers:** 1015 annotations; train/val/test = 603/206/206 annotations over 37/8/8 patients; tokens per example median 303/344/303, max 622/456/516, none over 1024. Gold validation: 0 bad evidence ids, 0 bad labels. Split patient sets identical to the joint-session split (results/finetune/split_overlap_check.json). Adapter: 18,464,768 params, r=16, alpha=32, all 7 projections.
 **What failed / surprised us:** annotation 883 has a null criterion_text (train); skipped by SFT. Label skew: exclusion is 484/659 "not excluded"; inclusion "not included" only 23.
+
+## 2026-11-10 · TGA-13/14/15/16 · Parser, metrics, evidence metrics, eval runner
+**Goal:** robust output parsing and reproducible evaluation. **Machine:** CPU laptop **Run(s):** results/eval/smoke_*/
+**What we tried:** parse.py (think/fence/single-quote/synonym handling, type-mismatch -> INVALID, hallucinated ids split out); classification.py (fixed label lists, INVALID predicted-only column, bootstrap CI, confusion heatmaps); evidence.py (explicit empty-set rules, four-cell counts); explain.py (explanations only from cited sentences); run.py (resumable per-row jsonl, sealed test split); errors.py (auto-tagging for TGA-23).
+**Numbers:** 17 unit tests incl. hand-computed toy metrics and sklearn cross-check pass; real-model numbers pending smoke run.
+**What failed / surprised us:** loading the shared adapter with peft 0.13.2 raised TypeError on unknown LoraConfig key `alora_invocation_tokens` (adapter saved by a newer peft).
