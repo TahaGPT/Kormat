@@ -111,3 +111,8 @@ Block sweep at L=2048 (loops): 16 -> 7.97 s, 64 -> 1.04 s, 256 -> 0.61 s (12 -> 
 **What we tried:** `--prefix-cache` prefills system+note once per patient (DynamicCache, deep-copied per criterion, passed to generate), token-id prefix verified per record with fallback; `--chunk N` for resumable slices.
 **Numbers:** 3 val rows, ft model: outputs identical token-for-token; plain ~10.7 s/example, cached ~7.2 s/example when the prefix is reused (first row of a patient 13.5 s incl. prefill); mean speedup 1.2x on this 3-row sample (prefix 273 tok, suffix 49-70 tok).
 **What failed / surprised us:** speedup is capped by decoding (~14 new tokens), not prefill; machine load varies a lot (smoke earlier: 38-86 s/example under contention).
+
+## TGA-2 CPU environment probe (model agent)
+- scripts/capture_env.py -> results/env/cpu_laptop.json (i5-10310U, 4C/8T, 15.5 GB, torch 2.5.1 CPU).
+- scripts/probe_cpu.py (locked, fresh process per config), results/probe/cpu_probe.csv + summary.md. Merged target fp32: RSS 6.3 GB after load, 9.2 GB peak during load; draft 2.2 GB (3.2 GB peak); target+draft 8.2 GB resident. Prefill@512 about 9 s, decode about 0.5 s/token (target), 0.16 s/token (draft). 4 vs 8 threads differ by 1.1 % (noise) -> KORMAT_NUM_THREADS=4.
+- Projection: 412 val+test criteria x about 21 s = about 2.4 h per model pass (assumes 512-token prompt, 24-token answer; timings taken while other agents were running, so indicative). A first probe attempt died at the target+draft step under RAM pressure (nothing recorded); the rerun succeeded.

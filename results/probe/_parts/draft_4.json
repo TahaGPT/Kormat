@@ -1,0 +1,1 @@
+[{"config": "draft", "component": "draft", "threads": 4, "load_s": 3.4, "rss_after_load_mb": 2225, "peak_rss_mb": 3166, "prefill_256_ms": 1308, "prefill_512_ms": 2840, "prefill_1024_ms": 5579, "decode_ms_per_token": 164.5}]

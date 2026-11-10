@@ -1,0 +1,1 @@
+[{"config": "target_base", "component": "target", "threads": 4, "load_s": 3.8, "rss_after_load_mb": 6229, "peak_rss_mb": 9173, "prefill_256_ms": 4123, "prefill_512_ms": 8371, "prefill_1024_ms": 16594, "decode_ms_per_token": 515.0}]
