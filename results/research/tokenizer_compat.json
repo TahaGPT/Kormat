@@ -1,0 +1,70 @@
+{
+  "models": [
+    "Qwen/Qwen2.5-1.5B-Instruct",
+    "Qwen/Qwen2.5-0.5B-Instruct"
+  ],
+  "vocab_equal": true,
+  "vocab_size_tokenizer": [
+    151665,
+    151665
+  ],
+  "config_vocab_size": [
+    151936,
+    151936
+  ],
+  "merges_equal": true,
+  "n_merges": [
+    151387,
+    151387
+  ],
+  "special_tokens_equal": true,
+  "special_tokens_map": {
+    "eos_token": "<|im_end|>",
+    "pad_token": "<|endoftext|>",
+    "additional_special_tokens": [
+      "<|im_start|>",
+      "<|im_end|>",
+      "<|object_ref_start|>",
+      "<|object_ref_end|>",
+      "<|box_start|>",
+      "<|box_end|>",
+      "<|quad_start|>",
+      "<|quad_end|>",
+      "<|vision_start|>",
+      "<|vision_end|>",
+      "<|vision_pad|>",
+      "<|image_pad|>",
+      "<|video_pad|>"
+    ]
+  },
+  "added_tokens_equal": true,
+  "eos_pad_ids": {
+    "1.5B": [
+      151645,
+      151643
+    ],
+    "0.5B": [
+      151645,
+      151643
+    ]
+  },
+  "chat_template_equal": true,
+  "rendered_chat_equal": true,
+  "tokenizer_json_sha256": [
+    "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+    "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+  ],
+  "vocab_json_sha256": [
+    "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+    "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+  ],
+  "merges_txt_sha256": [
+    "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+    "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"
+  ],
+  "n_strings": 50,
+  "n_id_mismatches": 0,
+  "mismatching_strings": [],
+  "total_tokens_checked": 623,
+  "compatible": true
+}
