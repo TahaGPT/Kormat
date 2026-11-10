@@ -25,12 +25,14 @@ ap.add_argument("--gammas", default="1,2,3,4,6")
 ap.add_argument("--max-new", type=int, default=64)
 ap.add_argument("--plot", action="store_true")
 ap.add_argument("--measure-c", type=int, default=1)
+ap.add_argument("--micro", action="store_true", help="linear-layer M=1 vs M>1 micro-benchmark (no model)")
 a = ap.parse_args()
 
 
-def theory(alpha, g, c):
+def theory(alpha, g, c, v=1.0):
+    """v = cost of the (g+1)-token verify forward in units of one target decode step (paper assumes v=1)."""
     E = (g + 1) if alpha >= 1 else (1 - alpha ** (g + 1)) / (1 - alpha)
-    return E / (g * c + 1)
+    return E / (g * c + v)
 
 
 def plot():
@@ -48,6 +50,11 @@ def plot():
         ax.plot(gs, [r["speedup_total"] for r in s["by_gamma"]], "o-", label="measured (total latency)")
         ax.plot(gs, [r["speedup_decode"] for r in s["by_gamma"]], "s--", label="measured (decode only)")
         ax.plot(gs, [theory(r["alpha_hat"], r["gamma"], s["c"]) for r in s["by_gamma"]], "k:", label=f"theory, c={s['c']:.2f}")
+        ve = s["meta"].get("verify_ms", {})
+        t1 = s["meta"]["step_ms"]["target_q1"]
+        if ve:
+            ax.plot(gs, [theory(r["alpha_hat"], r["gamma"], s["c"], ve[str(r["gamma"] + 1)] / t1) for r in s["by_gamma"]],
+                    "r-.", label="theory with measured verify cost")
         ax.axhline(1, color="grey", lw=.8)
         ax.set_xlabel("gamma"); ax.set_ylabel("speedup vs greedy KV"); ax.set_title(f"workload {wl}"); ax.grid(alpha=.3)
         ax.legend(fontsize=7)
@@ -65,6 +72,22 @@ def plot():
 
 if a.plot:
     plot()
+    raise SystemExit
+
+if a.micro:
+    out = {}
+    torch.manual_seed(0)
+    for name, shape in (("mlp_up_8960x1536", (8960, 1536)), ("lm_head_151936x1536", (151936, 1536))):
+        w = torch.randn(*shape)
+        for m in (1, 2, 3, 5, 9):
+            x = torch.randn(m, shape[1])
+            ts = []
+            for _ in range(12):
+                t0 = time.perf_counter(); torch.nn.functional.linear(x, w); ts.append(time.perf_counter() - t0)
+            out[f"{name}_M{m}_ms"] = st.median(ts[2:]) * 1e3
+    d = RESULTS / "speculative"; d.mkdir(parents=True, exist_ok=True)
+    (d / "micro_linear.json").write_text(json.dumps({"loadavg": __import__("os").getloadavg(), **out}, indent=1))
+    print(json.dumps(out, indent=1))
     raise SystemExit
 
 import os  # noqa: E402
