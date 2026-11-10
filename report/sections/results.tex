@@ -11,13 +11,35 @@ Fig.~\ref{fig:train} shows the run that produced the adapter. Its configuration 
 
 \subsection{Before/after on identical examples}
 \maybeinput{tables/eval_before_after}
-% TODO-INTERPRET: accuracy and macro-F1 change, per-class changes, inclusion vs exclusion, INVALID rate before/after.
+\begin{figure}[t]\centering
+\includegraphics[width=\columnwidth]{figures/f1_delta.pdf}
+\caption{Per-class F1 on the test split before (base) and after (fine-tuned) adaptation, same prompts and greedy decoding.}\label{fig:delta}
+\end{figure}
+\begin{figure}[t]\centering
+\includegraphics[width=0.49\columnwidth]{figures/confusion_base_test_exclusion.pdf}\hfill
+\includegraphics[width=0.49\columnwidth]{figures/confusion_ft_test_exclusion.pdf}
+\caption{Confusion matrices for \emph{exclusion} criteria on the test split: base model (left), fine-tuned model (right). Rows: expert label; columns: prediction.}\label{fig:cm}
+\end{figure}
+Table~\ref{tab:cls} compares the unadapted base model and the fine-tuned model on the same 206 test criteria, with the same prompt, parser and plain greedy decoding. Accuracy rises from 0.160 to 0.733 and macro-F1 from 0.129 to 0.528, and the 95\% bootstrap intervals do not overlap. On the paired outcomes, fine-tuning corrects 129 criteria and breaks 11 (exact McNemar $p\approx10^{-26}$).
+
+The base model's failures are systematic rather than random (Fig.~\ref{fig:cm}, left). It always returns a parsable answer, but it never uses ``not enough information'' or ``not excluded''. It labels 83 of the 131 exclusion criteria ``excluded'' and the rest ``not applicable''. Inclusion criteria get only ``included'' (61) or ``not applicable'' (14). Exclusion accuracy is therefore 0.038: the base model reads ``excluded'' as ``this exclusion criterion is relevant'', not ``the patient meets it and is excluded''. It also cites about three sentences per criterion, against 0.46 in the expert annotations.
+
+Fine-tuning teaches the label semantics and calibrated citation (Fig.~\ref{fig:delta}).
+\begin{itemize}
+\item ``not excluded'' F1 goes from 0 to 0.82.
+\item ``not enough information'' goes from 0 to 0.63; it is 0.83 on inclusion criteria.
+\item ``included'' improves from 0.59 to 0.88.
+\item The model cites 0.54 sentences per criterion, close to the experts' 0.46.
+\item It also answers more concisely, with 15 generated tokens versus 22 and no Markdown fences.
+\end{itemize}
+Two classes stay at zero F1 for both models. ``Excluded'' has no test support at all, and ``not included'' has 7 test examples and only 23 in the whole dataset. Exclusion ``not enough information'' is the main remaining failure (Section~\ref{sec:errors}). Accuracy is high relative to macro-F1 because the most frequent classes are learned well and the rare ones are not.
+\maybeinput{tables/perclass_prf}
 
 \subsection{Evidence retrieval}
 \maybeinput{tables/evidence_prf}
-% TODO-INTERPRET: P/R/F1, treatment of empty-gold records.
+Evidence localisation improves as much as labelling (Table~\ref{tab:evidence}). Micro-F1 rises from 0.17 to 0.58 and macro-F1 over all records from 0.36 to 0.82. Most of the gain comes from correct abstention. Of the 145 test criteria whose expert evidence set is empty, the base model cites sentences for 93, whereas the fine-tuned model cites them for only 13. On the 61 criteria with non-empty gold evidence, macro-F1 is 0.61 after fine-tuning versus 0.35 before. Evidence is better on inclusion than on exclusion criteria (micro-F1 0.62 vs 0.42). Every cited ID exists in the note: zero hallucinated IDs for both models, which matters because each explanation in the application quotes exactly these sentences.
 
-\subsection{Error analysis}
+\subsection{Error analysis}\label{sec:errors}
 \maybeinput{tables/error_cases}
 On the test split the fine-tuned model made 55 label errors out of 206. Another 33 criteria had the right label but a different evidence set: in 19 the model cited sentences outside the expert set, in 17 it missed expert sentences, and some did both. No output was unparsable, and no cited ID was outside the note. Table~\ref{tab:errors} traces eleven distinct cases; the full list with sentence text is in \texttt{docs/research/error\_analysis.md}. Four patterns emerge.
 
@@ -37,7 +59,7 @@ On the test split the fine-tuned model made 55 label errors out of 206. Another 
 
 \textbf{Speed.} Table~\ref{tab:kv} and Fig.~\ref{fig:kvspeed} show the asymptotic difference. Without a cache, every new token re-encodes the whole sequence, so decode throughput falls with prompt length (0.31, 0.13 and 0.07 tok/s at $P=208$, 523 and 1025). With the cache, each step processes one token against stored keys and values, and throughput stays roughly flat (2.26, 2.19 and 1.90 tok/s). The measured speed-up therefore grows from $7\times$ to about $17\times$ and $27\times$; the last two compare per-token decode rates measured at different $N$, because the no-cache grid was capped at small $N$ to fit the time budget. Prefill time is the same in both modes (about 2.9\,s at $P=208$), since it is a single forward pass either way.
 
-\textbf{Memory.} Thanks to grouped-query attention (2 KV heads), the analytical cache is only 28\,KB per token in fp32 (12--60\,MB here). That is negligible next to the 6.3\,GB of fp32 weights, so peak RSS barely moves (6.35 to 6.54\,GB). On this hardware the cache trades a few megabytes for an order-of-magnitude speed-up. One outlier ($P=1025$, $N=64$: 0.97 tok/s) was measured while other jobs shared the CPU and is treated as noise.
+\textbf{Memory.} Thanks to grouped-query attention (2 KV heads), the analytical cache is only 56\,KB per token in fp32 (12--60\,MB here). That is negligible next to the 6.3\,GB of fp32 weights, so peak RSS barely moves (6.35 to 6.54\,GB). On this hardware the cache trades a few megabytes for an order-of-magnitude speed-up. One outlier ($P=1025$, $N=64$: 0.97 tok/s) was measured while other jobs shared the CPU and is treated as noise.
 
 \textbf{Prefix reuse in evaluation.} The evaluation runner applies the same mechanism across criteria. The system prompt and patient note (273 tokens in the checked example) are prefilled once per patient, and the cache is copied for each criterion. Outputs were token-identical to plain generation (3/3, Table~\ref{tab:prefix}). Per-criterion latency fell from 10.7\,s to 7.2\,s when the prefix was reused, but the mean gain was only about $1.2\times$, because decoding the roughly 15-token answer, not the prompt, dominates on a CPU.
 \maybeinput{tables/prefix_cache}
@@ -56,11 +78,11 @@ On the test split the fine-tuned model made 55 label errors out of 206. Another 
 \maybeinput{tables/speculative}
 \begin{figure}[t]\centering
 \includegraphics[width=\columnwidth]{figures/spec_speedup.pdf}
-\caption{Measured speculative speed-up versus draft length $\gamma$, against the theoretical curve with the measured draft/target cost ratio $c=0.337$, and with the measured verification cost.}\label{fig:spec}
+\caption{Measured speculative speed-up versus draft length $\gamma$, against the theoretical curve with the measured draft/target cost ratio $c=0.337$, and with the measured verification cost.}\label{fig:specspeed}
 \end{figure}
 \textbf{Correctness.} Our draft--verify--rollback decoder produced exactly the target's greedy sequence in 18 of 18 runs on validation prompts ($\gamma\in\{2,4,8\}$), and in every benchmark run (Tables~\ref{tab:speceq} and~\ref{tab:specbench}). The cache invariant (both caches hold exactly the committed prefix) is asserted after every round. Unit tests cover rejection at the first token, full acceptance with the bonus token, EOS inside an accepted block, and overshooting \texttt{max\_new\_tokens}.
 
-\textbf{Efficiency.} The 0.5B draft agrees with the target often: the acceptance rate is 0.73 to 0.93 depending on $\gamma$. Even so, the end-to-end speed-up is between $0.88\times$ and $1.01\times$, i.e.\ no gain. Fig.~\ref{fig:spec} explains why with three measured effects.
+\textbf{Efficiency.} The 0.5B draft agrees with the target often: the acceptance rate is 0.73 to 0.93 depending on $\gamma$. Even so, the end-to-end speed-up is between $0.88\times$ and $1.01\times$, i.e.\ no gain. Fig.~\ref{fig:specspeed} explains why with three measured effects.
 \begin{enumerate}
 \item The draft is not cheap enough. One draft step costs $c=0.337$ of a target step (146 vs 434\,ms), whereas the analysis of Leviathan et al. assumes $c\ll1$.
 \item Verification is not free. Scoring 2 to 9 tokens in one target pass took 731 to 764\,ms, about $1.7\times$ a single decode step, because on a CPU the extra rows of the 151k-vocabulary output projection and the attention cost real FLOPs. A GPU at batch 1 would be memory-bound instead, and that cost would vanish.
@@ -71,12 +93,12 @@ With $\alpha\approx0.83$ and $\gamma=4$, the theory predicts $1.5\times$ with $c
 \subsection{Application}
 \begin{figure}[t]\centering
 \includegraphics[width=\columnwidth]{figures/app_real_results.png}
-\caption{Kormat screening a validation patient with the fine-tuned model (real engine, KV-cached decoding). The second criterion is selected and its cited sentence~0 is highlighted in the numbered note. The missing-information list and the rule-based preliminary outcome are shown, together with the disclaimer banner.}\label{fig:app}
+\caption{Kormat screening a validation patient with the fine-tuned model (real engine, KV-cached decoding). The second criterion is selected and its cited sentence~0 is highlighted in the numbered note. The missing-information list and the rule-based preliminary outcome are shown, together with the disclaimer banner.}\label{fig:appshot}
 \end{figure}
 \begin{figure}[t]\centering
 \includegraphics[width=\columnwidth]{figures/app_real_lab.png}
 \caption{Inference lab: the same criterion decoded live with no cache, our KV cache and speculative decoding ($\gamma=4$). The lab shows timings, memory, acceptance rate and token equality against the KV-cached reference.}\label{fig:lab}
 \end{figure}
-Fig.~\ref{fig:app} shows the screening workflow on the real fine-tuned model. A user pastes a note (free text is split into numbered sentences), enters or pastes the criteria (or fetches them by NCT ID), and runs the screen. Each criterion row shows the label, the cited IDs and an explanation quoted only from those sentences, and clicking a row highlights the evidence. In a recorded real-engine session (\texttt{results/app/*/real\_smoke.json}), with the evaluation running concurrently on the same CPU, the model loaded in 15\,s from the local cache. Each criterion took 9.5--10.4\,s, and all four criteria of the sample patient matched the expert labels. The patient--trial outcome is an explicit rule (any exclusion met or inclusion unmet $\Rightarrow$ likely ineligible; otherwise any missing information $\Rightarrow$ undetermined; otherwise potentially eligible). The app presents it as a preliminary aggregation, never as ground truth.
+Fig.~\ref{fig:appshot} shows the screening workflow on the real fine-tuned model. A user pastes a note (free text is split into numbered sentences), enters or pastes the criteria (or fetches them by NCT ID), and runs the screen. Each criterion row shows the label, the cited IDs and an explanation quoted only from those sentences, and clicking a row highlights the evidence. In a recorded real-engine session (\texttt{results/app/*/real\_smoke.json}), with the evaluation running concurrently on the same CPU, the model loaded in 15\,s from the local cache. Each criterion took 9.5--10.4\,s, and all four criteria of the sample patient matched the expert labels. The patient--trial outcome is an explicit rule (any exclusion met or inclusion unmet $\Rightarrow$ likely ineligible; otherwise any missing information $\Rightarrow$ undetermined; otherwise potentially eligible). The app presents it as a preliminary aggregation, never as ground truth.
 
 The lab (Fig.~\ref{fig:lab}) re-runs any criterion live under each decoding mode. For a 24-token output, no-cache decoding took 68.9\,s, KV-cached decoding 6.2\,s and speculative decoding 4.0\,s, with an acceptance rate of 91.7\%. All three produced the same tokens, which the lab confirms with an equality badge. On this longer output speculative decoding did help, consistent with the analysis above: the gain appears once decoding, not prefill, dominates. Invalid inputs (empty note, too many criteria, malformed criteria, the model still loading, an offline NCT fetch) return explanatory messages and the app keeps working; the automated tests cover each case. Reports export as print-ready HTML and JSON with provenance (model and adapter revision, adapter hash, git commit, decoding settings) and persist across restarts.

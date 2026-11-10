@@ -12,18 +12,18 @@ Fig.~\ref{fig:pipeline} shows the pipeline. Components in the top row prepare da
 \subsection{Dataset and split}
 \label{sec:dataset}
 We use only the NCBI TrialGPT criterion annotations~\cite{trialgpt_criterion_annotations}: 1{,}015 criterion annotations for 53 patients, each with a patient description, criterion type and text, expert label and expert evidence sentence IDs. The dataset also contains GPT-4 predictions and explanations; these are never used as input or in evaluation. Unique patient IDs are sorted, shuffled with \texttt{numpy.random.default\_rng(42)}, and the first 37 go to training, the next 8 to validation and the last 8 to test; every annotation of a patient lies in exactly one split. The manifest is saved in \texttt{results/split\_manifest.json} and a leakage check asserts empty pairwise patient intersections. The test split was untouched until final evaluation.
-\maybeinput{tables/data_stats} Fig.~\ref{fig:labels} shows the label distribution. % TODO-INTERPRET: split sizes, class imbalance
+\maybeinput{tables/data_stats} Fig.~\ref{fig:labels} shows the label distribution. The splits hold 603/206/206 annotations; the dataset's own \texttt{training} flag is ignored in favour of the prescribed split, and our patient sets are identical to the split on which the shared adapter was trained (\texttt{results/finetune/split\_overlap\_check.json}).
 \begin{figure}[t]\centering
 \includegraphics[width=\columnwidth]{figures/label_distribution.pdf}
 \caption{Label distribution per criterion type and split.}
 \label{fig:labels}
 \end{figure}
-% TODO-INTERPRET: Fig. labels: class imbalance, which classes are rare, consequence for macro-F1.
+The labels are heavily imbalanced. Most exclusion criteria are ``not excluded'' (292 of 388 in training, 218 of those with no evidence sentence), while ``excluded'' (8 in training, none in test) and ``not included'' (23 in the whole dataset) are rare. Accuracy is therefore dominated by the frequent classes, and macro-F1, which weights every class equally, is the more informative metric.
 
 \subsection{Input/output processing and tokenization}
 \label{sec:io}
 Each patient note is split into numbered sentences following the dataset's sentence indexing. A single prompt contract (system message, numbered note, criterion type, criterion, allowed labels, JSON return format) is shared by training, evaluation, benchmarks and the app, so all see the identical string. The target is a JSON object \texttt{\{"label": ..., "evidence": [ids]\}}; the label set depends on criterion type and is never collapsed to yes/no. Text is tokenised with the Qwen2.5 tokenizer (151{,}936 tokens, identical for the 1.5B and 0.5B models) through the chat template. Training examples longer than 1{,}024 tokens are dropped, never cut mid-text, so no relevant evidence is silently removed.
-\maybeinput{tables/token_lengths} Fig.~\ref{fig:toklen} shows the length distribution. % TODO-INTERPRET: number dropped per split, any evidence lost.
+\maybeinput{tables/token_lengths} Fig.~\ref{fig:toklen} shows the length distribution: the median is 303--344 tokens per split and the maximum 622, so with a 1{,}024-token budget no example was dropped or truncated and no gold evidence was lost.
 \begin{figure}[t]\centering
 \includegraphics[width=\columnwidth]{figures/token_lengths.pdf}
 \caption{Prompt length in tokens per split with the truncation threshold.}
@@ -57,7 +57,7 @@ KV B/token (bf16) & 28,672 & 114,688 & 32,768 & 196,608 \\
 \end{tabular}}\\[2pt]
 {\scriptsize $^{\ast}$ gated; values from public mirror. $^{\dagger}$ safetensors total incl.\ embeddings (card: 1.7B).}
 \end{table}
-% TODO-INTERPRET: Table models: GQA drives the KV-bytes column; why CPU RAM (15 GB) rules out larger caches; weights fit.
+Grouped-query attention drives the KV-bytes column: Qwen2.5-1.5B keeps 2 KV heads, so its cache costs 28\,KB per token in bf16 (56\,KB in our fp32 runs). That is comparable to Llama-3.2-1B (32\,KB) and 4--7$\times$ less than Qwen3-1.7B (115\,KB) and SmolLM2-1.7B (197\,KB). On our CPU laptop (15\,GB RAM, fp32 because the CPU has no fast bf16), the 1.5B target needs 6.3\,GB resident and target plus draft 8.2\,GB. That fits, whereas a 3B or 7B model in fp32 would not.
 
 \subsection{Fine-tuning}
 \label{sec:finetune}
@@ -65,7 +65,7 @@ KV B/token (bf16) & 28,672 & 114,688 & 32,768 & 196,608 \\
 
 \textbf{Method choice.} For $N=1.54\times10^9$ parameters, full fine-tuning with mixed-precision AdamW needs about $16N\approx 23$~GiB for weights, gradients and optimiser state; LoRA~\cite{hu2022lora} with $r{=}16$ on $q,k,v,o,\mathrm{gate},\mathrm{up},\mathrm{down}$ trains 18{,}464{,}768 parameters (1.2\%), about 3.1~GiB in total; QLoRA~\cite{dettmers2023qlora} would reach about 1.0~GiB but adds quantisation overhead unnecessary at this size. Prompt-only is our ``before'' baseline.
 
-\textbf{Configuration.} LoRA $r=16$, $\alpha=32$, dropout 0.05, 3 epochs, learning rate $2\times10^{-4}$ with cosine schedule, effective batch size 16, bf16. The training objective is next-token cross-entropy on the assistant JSON only (prompt tokens masked). % TODO-INTERPRET: confirm masking, warmup, seed, steps and curves from the shared run record; add training-curve figure in Results.
+\textbf{Configuration.} LoRA $r=16$, $\alpha=32$, dropout 0.05, 3 epochs, learning rate $2\times10^{-4}$ with cosine schedule, effective batch size 16, bf16, warm-up 5\%, seed 42, micro-batch 1 with gradient accumulation 16, maximum length 1{,}024, gradient checkpointing; about 113 optimiser steps over 602 training examples (the shared run's log ends at step 110, epoch 2.9, after 59 minutes). The objective is next-token cross-entropy on the assistant JSON (prompt tokens masked in our implementation, \texttt{src/kormat/finetune/train.py}). The checkpoint with the best validation macro-F1 by the run's own evaluation (epoch~3) was published. The training curves are in Fig.~\ref{fig:train}.
 
 \subsection{Own KV-cache decoder}
 \label{sec:kv}
@@ -131,7 +131,7 @@ We implement greedy speculative decoding~\cite{leviathan2023speculative,chen2023
 
 \subsection{Application workflow}
 \label{sec:app}
-``Kormat'' is a FastAPI service with a static browser front end. A user pastes a patient description and one or more criteria; the server splits sentences, builds the shared prompt, decodes (with cache and optional speculation), parses and validates the JSON (cited IDs must exist in the note), and returns per-criterion label, cited IDs, evidence text and an explanation based only on the note (Fig.~\ref{fig:app}). Multiple criteria may be combined into a patient--trial summary by explicit rules, which is an aggregation and not a ground-truth outcome. % TODO-INTERPRET: add rule table and screenshots (figures/app_*.png) when TGA-36..41 land.
+``Kormat'' is a FastAPI service with a static browser front end. A user pastes a patient description and one or more criteria; the server splits sentences, builds the shared prompt, decodes (with cache and optional speculation), parses and validates the JSON (cited IDs must exist in the note), and returns per-criterion label, cited IDs, evidence text and an explanation based only on the note (Fig.~\ref{fig:app}). Multiple criteria may be combined into a patient--trial summary by explicit rules, which is an aggregation and not a ground-truth outcome. The rule, applied in order: (1) any exclusion criterion judged ``excluded'' gives \emph{likely ineligible}; (2) otherwise any inclusion criterion ``not included'' gives \emph{likely ineligible}; (3) otherwise any ``not enough information'' or invalid output gives \emph{undetermined, information missing}, listing what is missing; (4) otherwise \emph{potentially eligible}; ``not applicable'' criteria are shown but ignored. Screenshots are in Section~\ref{sec:results}.
 \begin{figure}[t]\centering
 \resizebox{\columnwidth}{!}{\input{diagrams/appflow}}
 \caption{Application request flow.}
