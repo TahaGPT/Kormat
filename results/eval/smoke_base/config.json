@@ -1,0 +1,13 @@
+{
+  "name": "base",
+  "split": "val",
+  "limit": 3,
+  "adapter": null,
+  "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+  "decoding": {
+    "do_sample": false,
+    "max_new_tokens": 48,
+    "batch_size": 1,
+    "dtype": "torch.float32"
+  }
+}
