@@ -52,7 +52,7 @@ textarea:hover,input:hover,select:hover{border-color:var(--text-3)}
 .btn:disabled{opacity:.55;cursor:progress}.btn.icon{min-width:44px}
 .ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 .row{display:flex;gap:8px;align-items:center;margin:16px 0 0;flex-wrap:wrap}.row.nowrap{flex-wrap:wrap}.row.nowrap input{flex:1 1 140px;width:auto}
-.crit{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) 44px;gap:8px;margin:8px 0;animation:rise .25s var(--ease) both}
+.crit{display:grid;grid-template-columns:minmax(0,250px) minmax(0,1fr) 44px;gap:8px;margin:8px 0;animation:rise .25s var(--ease) both}
 @media(max-width:600px){.crit{grid-template-columns:minmax(0,1fr) 44px}.crit select{grid-column:1/-1}}
 .crit.excl select{border-width:2px;border-color:var(--text)}
 .crit .btn{padding:0}
@@ -130,3 +130,7 @@ pre{white-space:pre-wrap;background:var(--surface);border:1px solid var(--border
 .hero{position:relative;overflow:hidden}.hero-in{position:relative;z-index:1}
 #hero3d{display:none;position:absolute;right:0;top:0;width:340px;height:100%;pointer-events:none;opacity:.45;z-index:0}.has3d #hero3d{display:block}
 @media(max-width:1023px){#hero3d{width:100%;opacity:.15}}
+
+/* lead-review fixes: keep hero text clear of the 3D canvas; readable criterion-type labels */
+@media(min-width:1024px){.has3d .hero-in{padding-right:340px}}
+.crit select{text-overflow:ellipsis}
