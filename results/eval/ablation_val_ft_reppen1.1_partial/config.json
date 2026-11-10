@@ -1,0 +1,15 @@
+{
+  "name": "ft",
+  "split": "val",
+  "limit": null,
+  "adapter": "arceus1rk/eligitrace-qwen2.5-1.5b-lora@2c3a46e",
+  "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+  "prefix_cache": true,
+  "chunk": 40,
+  "decoding": {
+    "do_sample": false,
+    "max_new_tokens": 48,
+    "batch_size": 1,
+    "dtype": "torch.float32"
+  }
+}

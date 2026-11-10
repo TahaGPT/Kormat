@@ -57,7 +57,10 @@ def generate_one(model, tok, eos, rec, pc: PrefixCache | None = None, return_ids
     prompt = render_prompt(tok, build_messages(rec["sentences"], rec["criterion_type"], rec["criterion_text"]))
     enc = tok(prompt, return_tensors="pt")
     ids = enc["input_ids"]
+    # Plain greedy: override Qwen's generation_config defaults (repetition_penalty=1.1, temperature/top_p/top_k),
+    # which HF would otherwise still apply to do_sample=False. Matches kormat.decoding greedy loops exactly.
     kw = dict(do_sample=False, max_new_tokens=MAX_NEW, eos_token_id=list(eos),
+              repetition_penalty=1.0, temperature=None, top_p=None, top_k=None,
               pad_token_id=tok.pad_token_id if tok.pad_token_id is not None else min(eos))
     extra = {}
     t0 = time.perf_counter()
@@ -157,7 +160,8 @@ def run_eval(records, loaded, out_dir: Path, split: str, name: str, adapter=None
     cfg = {"name": name, "split": split, "limit": limit, "adapter": adapter,
            "model_id": getattr(loaded, "model_id", None),
            "prefix_cache": prefix_cache, "chunk": chunk,
-           "decoding": {"do_sample": False, "max_new_tokens": MAX_NEW, "batch_size": 1,
+           "decoding": {"do_sample": False, "max_new_tokens": MAX_NEW, "batch_size": 1, "repetition_penalty": 1.0,
+                        "temperature": None, "top_p": None, "top_k": None,
                         "dtype": str(getattr(loaded, "dtype", "float32"))}}
     (out_dir / "config.json").write_text(json.dumps(cfg, indent=2, default=str))
     (out_dir / "env.json").write_text(json.dumps(runlog.capture_env(), indent=2))

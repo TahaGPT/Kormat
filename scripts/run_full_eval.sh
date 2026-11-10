@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Full before/after evaluation on CPU, chunked so other jobs can take the model lock between chunks.
-# Order: ft-val, ft-test, base-test, base-val. Resumable: re-running continues where it stopped.
+# Order (deadline-driven; config frozen, nothing tuned on val): ft-test, base-test, ft-val, base-val. Resumable: re-running continues where it stopped.
 set -u
 cd "$(dirname "$0")/.."
 CHUNK=${CHUNK:-40}
@@ -15,7 +15,7 @@ run() {  # model split outdir
     echo "chunk done $model $split ($(wc -l < "$out/predictions.jsonl") rows)"
   done
 }
-run ft   val  results/eval/val_ft
 run ft   test results/eval/test_final/ft
 run base test results/eval/test_final/base
+run ft   val  results/eval/val_ft
 run base val  results/eval/val_base
