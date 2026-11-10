@@ -1,16 +1,16 @@
-# Shared training run (adapter arceus1rk/eligitrace-qwen2.5-1.5b-lora)
+# Shared training run: logs of the adapter we use (provenance only)
 
-Status: PARTIAL. The final adapter was produced in a disclosed joint training session on a shared GPU
-(with M. Ruhan Kamran, 23i-0062). That run's logs are not in this repository, and no training curve for it
-is shown here, because none may be reconstructed or estimated.
+The LoRA adapter `arceus1rk/eligitrace-qwen2.5-1.5b-lora` (revision 2c3a46e, used for every "fine-tuned" result
+in this repository) was trained in a **disclosed joint session on a shared GPU** with M. Ruhan Kamran (23i-0062).
+The files here are that run's own logs (`lora_r16_bf16`). They were copied unmodified from the co-trainer's public repository:
+https://github.com/ruhank-dev/eligitrace/tree/fe4bf7ed1edb263c0697b6e58420ec8e300d0bdb/results/training/lora_r16_bf16
 
-What this repository contains instead:
-- `configs/train.yaml`: the configuration of the shared run as it was communicated (r=16, alpha=32, dropout 0.05,
-  all attention + MLP projections, 3 epochs, lr 2e-4 cosine, 5 % warmup, micro-batch 1 x accum 16, max_len 1024, seed 42).
-- `src/kormat/finetune/train.py`: our own implementation of that configuration (CPU smoke run in `../smoke/`).
-- `configs/final.yaml`: pinned adapter revision and sha256 of the weights actually used for evaluation.
+| file | content |
+|---|---|
+| `config.yaml` | the run's configuration; identical in every setting to our `configs/train.yaml` |
+| `log_history.json` | training loss / lr / grad-norm per logged optimizer step |
+| `val_metrics_by_epoch.json` | validation loss and metrics per epoch, **as computed by the shared run's own code** (checkpoint selection: best val macro-F1 → epoch 3) |
 
-The user must supply, from the shared run: (1) the training/eval loss log (trainer_state.json or W&B/TensorBoard export),
-(2) the checkpoint-selection rule and which step was uploaded, (3) GPU model, wall-clock time, library versions,
-(4) confirmation that the exact configuration above is the one that was run, (5) any validation numbers the run reported.
-Until then the report must describe the adapter's training only by this configuration and the disclosure.
+These numbers are **not** our results. Every validation and test number in the paper comes from our own evaluation
+code (`src/kormat/eval/`) on our own split (identical patient sets; see `../split_overlap_check.json`).
+The training-curve figure is plotted by our script `scripts/plot_shared_run.py`.

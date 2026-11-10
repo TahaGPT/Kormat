@@ -1,0 +1,29 @@
+base_model: Qwen/Qwen2.5-1.5B-Instruct
+eval_each_epoch: true
+grad_ckpt: true
+lora:
+  alpha: 32
+  dropout: 0.05
+  r: 16
+  target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+max_seq_len: 1024
+oversample: {}
+run_name: lora_r16_bf16
+seed: 42
+strategy: bf16-mixed
+train:
+  epochs: 3
+  grad_accum: 16
+  log_every: 5
+  lr: 0.0002
+  max_grad_norm: 1.0
+  micro_batch: 1
+  warmup_ratio: 0.05
+  weight_decay: 0.0
