@@ -1,60 +1,117 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kormat Eligibility Screening</title><link rel="icon" href="/logo.png"><link rel="stylesheet" href="style.css"></head>
+<title>Kormat Eligibility Screening</title>
+<link rel="icon" href="img/logo_black.png">
+<script>try{var t=localStorage.getItem("kormat-theme");document.documentElement.dataset.theme=t||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch(e){document.documentElement.dataset.theme="light"}</script>
+<link rel="stylesheet" href="style.css"></head>
 <body>
-<header><img src="/logo.png" alt="Kormat logo"><h1>Kormat</h1><span class="muted small">criterion-level trial eligibility screening</span><span class="sp"></span>
-<span id="health" class="badge" role="status" aria-live="polite">checking...</span>
-<button class="btn" id="theme" aria-label="Toggle light and dark theme">Light mode</button></header>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+<symbol id="i-q" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+<symbol id="i-warn" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="m6 3 14 9-14 9z"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M9 13h6M9 17h6"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></symbol>
+<symbol id="i-split" viewBox="0 0 24 24"><path d="M16 3h5v5M8 3H3v5M21 3l-7 7M3 3l7 7M12 12v9"/></symbol>
+</defs></svg>
+<div id="loader" role="dialog" aria-label="Loading Kormat" aria-modal="false">
+ <img class="logo-load logo-light" src="img/logo_black.png" alt=""><img class="logo-load logo-dark" src="img/logo_white.png" alt="">
+ <canvas id="load3d" aria-hidden="true"></canvas>
+ <p class="lt" id="loadtxt" role="status" aria-live="polite">Starting...</p>
+ <div class="bar lbar"><i id="loadbar"></i></div>
+ <p class="help" id="loadsub">Sentences (left strand) are linked to criteria (right strand).</p>
+ <button class="btn" id="loadskip" type="button">Skip</button>
+</div>
+<a class="skip" href="#main">Skip to main content</a>
 <div class="banner" role="note">Educational screening prototype, not a clinical enrollment decision.</div>
+<header class="top">
+ <div class="wrap top-in">
+  <a class="brand" href="#" aria-label="Kormat home"><img class="logo logo-light" src="img/logo_black.png" alt="Kormat"><img class="logo logo-dark" src="img/logo_white.png" alt="Kormat"></a>
+  <p class="sub">Criterion-level clinical-trial eligibility screening</p>
+  <span class="sp"></span>
+  <span id="health" class="badge" role="status" aria-live="polite"><span class="dot"></span><span id="healthtxt">checking...</span></span>
+  <button class="btn icon" id="theme" type="button" aria-label="Switch theme"><svg class="ic"><use href="#i-moon"/></svg><span id="themelbl">Dark</span></button>
+ </div>
+</header>
+<section class="hero"><div class="wrap hero-in">
+ <canvas id="hero3d" aria-hidden="true"></canvas><img class="logo-hero logo-light" src="img/logo_black.png" alt=""><img class="logo-hero logo-dark" src="img/logo_white.png" alt="">
+ <div><h1>Is this patient a fit for the trial?</h1><p class="lead">Kormat reads a patient note, checks it against each eligibility criterion, and cites the exact sentences behind every answer.</p></div>
+</div></section>
+<div class="wrap">
 <nav role="tablist" aria-label="Sections">
-<button role="tab" data-tab="screen" aria-selected="true">Screening</button>
+<button role="tab" data-tab="screen" aria-selected="true">Screen a patient</button>
 <button role="tab" data-tab="lab" aria-selected="false">Inference lab</button>
 <button role="tab" data-tab="history" aria-selected="false">History</button>
 <button role="tab" data-tab="about" aria-selected="false">How it decides</button></nav>
-<main>
-<section id="tab-screen">
-<div class="grid"><div>
- <div class="card"><h2>1. Patient note</h2>
-  <div class="row"><select id="sample" class="grow" aria-label="Load a sample"><option value="">Load a sample (train/val)...</option></select></div>
-  <label class="sr" for="note">Patient note</label>
+<div class="legend-wrap"><span class="legend-t">Label key</span><div id="legend" class="legend"></div></div>
+<main id="main" tabindex="-1">
+<section id="tab-screen" class="pane">
+<div class="grid"><div class="col-in">
+ <div class="card"><h2><span class="step">1</span>Patient note</h2>
+  <label for="sample">Load an example patient (training/validation data)</label>
+  <select id="sample"><option value="">Choose an example...</option></select>
+  <p class="help" id="samplehelp">Fills the note and its criteria below so you can try the tool in one click.</p>
+  <label for="note">Patient note</label>
   <textarea id="note" placeholder="Paste a patient note. Numbered lines like '0. text' are kept; otherwise sentences are split automatically."></textarea>
-  <div class="small muted"><span id="notecount">0</span> / <span id="notemax">12000</span> characters</div></div>
- <div class="card"><h2>2. Eligibility criteria</h2>
-  <label class="small muted" for="block">Paste a criteria block (Inclusion Criteria: / Exclusion Criteria: with bullets or numbers)</label>
-  <textarea id="block" style="min-height:90px"></textarea>
-  <div class="row"><button class="btn" id="parse">Parse into rows</button>
-   <input id="nct" class="grow" placeholder="NCT ID, e.g. NCT01234567" aria-label="NCT ID"><button class="btn" id="fetchnct">Fetch</button></div>
+  <p class="help"><span id="notecount">0</span> / <span id="notemax">12000</span> characters</p></div>
+ <div class="card"><h2><span class="step">2</span>Eligibility criteria</h2>
+  <label for="block">Paste criteria text (Inclusion Criteria: / Exclusion Criteria: with bullets or numbers)</label>
+  <textarea id="block" class="short"></textarea>
+  <div class="row"><button class="btn" id="parse" type="button"><svg class="ic"><use href="#i-split"/></svg>Split pasted text into criteria</button></div>
+  <label for="nct">ClinicalTrials.gov ID</label>
+  <div class="row nowrap"><input id="nct" placeholder="NCT01234567" autocomplete="off"><button class="btn" id="fetchnct" type="button"><svg class="ic"><use href="#i-globe"/></svg>Fetch criteria from ClinicalTrials.gov</button></div>
+  <p class="help">Needs internet; NCT followed by 8 digits.</p>
+  <h3>Criteria in this screening (<span id="critcount">0</span>)</h3>
   <div id="crits"></div>
-  <div class="row"><button class="btn" id="addrow">+ Add criterion</button><button class="btn" id="clearrows">Clear</button><span class="small muted" id="critcount"></span></div></div>
- <div class="card"><h2>3. Run</h2>
-  <div class="row"><label for="mode">Decoding</label><select id="mode" class="grow">
-   <option value="kv_cached">kv_cached (default)</option><option value="no_cache">no_cache</option>
-   <option value="speculative">speculative</option><option value="hf_generate">hf_generate</option></select>
-   <label for="gamma">gamma</label><input id="gamma" type="number" min="1" max="8" value="4" style="width:70px"></div>
-  <div class="row"><button class="btn primary" id="run">Screen patient</button><span id="runstat" class="small muted" aria-live="polite"></span></div>
-  <div id="screenerr"></div></div>
-</div><div id="results"><div class="card muted">Results will appear here. Load a sample to try it quickly.</div></div></div>
+  <div class="row"><button class="btn" id="addrow" type="button"><svg class="ic"><use href="#i-plus"/></svg>Add a criterion</button><button class="btn" id="clearrows" type="button"><svg class="ic"><use href="#i-trash"/></svg>Clear all criteria</button></div></div>
+ <div class="card"><h2><span class="step">3</span>Choose how to run</h2>
+  <fieldset class="modes" id="modes"><legend>Decoding mode</legend>
+   <label class="mc"><input type="radio" name="mode" value="kv_cached" checked><span class="mc-b"><b>Fast <small>reuse past computation (KV cache)</small></b><em>Stores each token's keys/values so every new word only processes itself. Default. Same answer as the reference.</em><i class="tag">speed: high / exact</i></span></label>
+   <label class="mc"><input type="radio" name="mode" value="no_cache"><span class="mc-b"><b>Reference <small>recompute everything (no cache)</small></b><em>Re-reads the whole note for every generated word. ~10-30x slower; used to prove the fast path is exact.</em><i class="tag">speed: low / exact</i></span></label>
+   <label class="mc"><input type="radio" name="mode" value="speculative"><span class="mc-b"><b>Speculative <small>small model drafts, large model checks</small></b><em>A 0.5B model guesses &gamma; words; the 1.5B model verifies them in one pass. Identical output; faster only for long answers on this CPU.</em><i class="tag">speed: varies / exact</i></span></label>
+   <label class="mc"><input type="radio" name="mode" value="hf_generate"><span class="mc-b"><b>Library baseline <small>Hugging Face generate()</small></b><em>Uses the library's built-in decoder, for comparison only.</em><i class="tag">speed: medium / exact</i></span></label>
+  </fieldset>
+  <p class="help now" id="modehelp" aria-live="polite"></p>
+  <div id="gammabox" hidden><label for="gamma">Draft length &gamma; - tokens guessed per round (more = bigger wins if guesses are right, more waste if wrong)</label>
+   <input id="gamma" type="number" min="1" max="8" value="4" class="narrow"></div>
+  <button class="btn primary big" id="run" type="button"><svg class="ic"><use href="#i-play"/></svg><span id="runlbl">Screen patient against 0 criteria</span></button>
+  <div class="prog" id="prog" hidden><div class="bar"><i id="progbar"></i></div><p class="help" id="runstat" aria-live="polite"></p></div>
+  <div id="screenerr" aria-live="assertive"></div></div>
+</div><div id="results" class="col-out"><div class="card empty"><h2>Results appear here</h2><p class="help">Load an example patient, review the criteria, then press the screening button. Each criterion gets a label, a plain-language reason and the note sentences it cites.</p></div></div></div>
 </section>
 
-<section id="tab-lab" hidden>
+<section id="tab-lab" class="pane" hidden>
  <div class="card"><h2>Live decoding comparison</h2>
-  <p class="small muted">Runs the selected decoding mechanisms on one criterion, live, on this machine. Greedy decoding: all modes should produce the same tokens as kv_cached.</p>
-  <div class="row"><label for="labcrit">Criterion</label><select id="labcrit" class="grow"></select></div>
-  <div class="row" id="labmodes">
-   <label><input type="checkbox" value="no_cache" checked> no_cache</label><label><input type="checkbox" value="kv_cached" checked> kv_cached</label>
-   <label><input type="checkbox" value="speculative" checked> speculative</label><label><input type="checkbox" value="hf_generate"> hf_generate</label>
-   <label>gamma <input id="labgamma" type="number" min="1" max="8" value="4" style="width:70px"></label>
-   <label>max tokens <input id="labmax" type="number" min="8" max="128" value="64" style="width:80px"></label>
-   <button class="btn primary" id="runlab">Run comparison</button><span id="labstat" class="small muted" aria-live="polite"></span></div>
-  <div id="laberr"></div><div id="labout"></div></div>
- <div class="card"><h2>Attention check (optional)</h2><div class="row"><label for="attlen">Sequence length</label>
-  <input id="attlen" type="number" value="256" min="16" max="2048" style="width:100px"><button class="btn" id="runatt">Run attention micro-benchmark</button></div><pre id="attout" hidden></pre></div>
- <div class="card"><h2>Stored study results</h2><p class="small muted">Read from the full benchmark runs in results/ (not these live runs).</p><div id="stored"></div></div>
+  <p class="help">Runs the selected decoding mechanisms on one criterion, live, on this machine. With greedy decoding every mode should produce the same tokens as Fast (KV cache).</p>
+  <label for="labcrit">Criterion to test</label><select id="labcrit"></select>
+  <fieldset class="checks" id="labmodes"><legend>Decoding modes to compare</legend>
+   <label class="ck"><input type="checkbox" value="no_cache" checked><span><b>Reference (no cache)</b><em>Recomputes everything each word; slowest, proves exactness.</em></span></label>
+   <label class="ck"><input type="checkbox" value="kv_cached" checked><span><b>Fast (KV cache)</b><em>Reuses past computation; the baseline all others are compared against.</em></span></label>
+   <label class="ck"><input type="checkbox" value="speculative" checked><span><b>Speculative</b><em>0.5B drafts, 1.5B verifies; reports acceptance rate.</em></span></label>
+   <label class="ck"><input type="checkbox" value="hf_generate"><span><b>Library baseline</b><em>Hugging Face generate(), for comparison only.</em></span></label></fieldset>
+  <div class="two"><div><label for="labgamma">Draft length &gamma; (speculative only) - tokens guessed per round</label><input id="labgamma" type="number" min="1" max="8" value="4"></div>
+  <div><label for="labmax">Max new tokens - longer answers make the cache and speculative gains more visible</label><input id="labmax" type="number" min="8" max="128" value="64"></div></div>
+  <div class="row"><button class="btn primary" id="runlab" type="button"><svg class="ic"><use href="#i-play"/></svg>Run comparison live (takes ~1-2 min on CPU)</button><span id="labstat" class="help" aria-live="polite"></span></div>
+  <div id="laberr" aria-live="assertive"></div><div id="labout"></div></div>
+ <div class="card"><h2>Attention check (optional)</h2>
+  <label for="attlen">Sequence length L - compare exact vs tiled attention</label>
+  <div class="row nowrap"><input id="attlen" type="number" value="256" min="16" max="2048" class="narrow"><button class="btn" id="runatt" type="button">Run attention micro-benchmark for this L</button></div><pre id="attout" hidden></pre></div>
+ <div class="card"><h2>Stored study results</h2><p class="help">Read from the full benchmark runs in results/ (not these live runs).</p><div id="stored"></div></div>
 </section>
 
-<section id="tab-history" hidden><div class="card"><h2>Saved reports</h2><div id="hist"></div></div></section>
+<section id="tab-history" class="pane" hidden><div class="card"><h2>Saved reports</h2><div id="hist"></div></div></section>
 
-<section id="tab-about" hidden><div class="card"><h2>How the preliminary outcome is decided</h2><ol id="rulelist"></ol>
- <p class="muted">This is a transparent rule over per-criterion model labels. It is a screening aid, never ground truth, and never an enrollment decision. The model sees only the note you provide: "not enough information" means the note does not say, which is not the same as "no".</p></div></section>
-</main>
-<script src="vendor/chart.umd.min.js"></script><script src="app.js"></script></body></html>
+<section id="tab-about" class="pane" hidden><div class="card"><h2>How the preliminary outcome is decided</h2>
+ <p class="help">The model labels every criterion separately; a fixed, transparent rule then combines the labels.</p>
+ <ol id="rulelist" class="rules"></ol>
+ <h3>What each label looks like</h3><div id="legend2" class="legend big"></div>
+ <p class="help">This is a screening aid, never ground truth, and never an enrollment decision. The model sees only the note you provide: "not enough information" means the note does not say, which is not the same as "no".</p></div></section>
+</main></div>
+<script src="vendor/chart.umd.min.js"></script><script type="module" src="three-scene.js"></script><script src="app.js"></script></body></html>
