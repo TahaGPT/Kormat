@@ -32,8 +32,10 @@ Fine-tuning teaches the label semantics and calibrated citation (Fig.~\ref{fig:d
 \item The model cites 0.54 sentences per criterion, close to the experts' 0.46.
 \item It also answers more concisely, with 15 generated tokens versus 22 and no Markdown fences.
 \end{itemize}
-Two classes stay at zero F1 for both models. ``Excluded'' has no test support at all, and ``not included'' has 7 test examples and only 23 in the whole dataset. Exclusion ``not enough information'' is the main remaining failure (Section~\ref{sec:errors}). Accuracy is high relative to macro-F1 because the most frequent classes are learned well and the rare ones are not.
+On the validation split the fine-tuned model reaches the same accuracy (0.733, CI 0.675--0.791), with macro-F1 0.431 and evidence micro-F1 0.55. The test result is therefore not a lucky draw of the 8 test patients. The validation base-model run was dropped for time; the before/after comparison rests on the test split. Two classes stay at zero F1 for both models. ``Excluded'' has no test support at all, and ``not included'' has 7 test examples and only 23 in the whole dataset. Exclusion ``not enough information'' is the main remaining failure (Section~\ref{sec:errors}). Accuracy is high relative to macro-F1 because the most frequent classes are learned well and the rare ones are not.
 \maybeinput{tables/perclass_prf}
+
+\textbf{Decoding ablation: a hidden repetition penalty.} Our first validation pass inherited Qwen's default \texttt{repetition\_penalty=1.1}, which Hugging Face applies even with \texttt{do\_sample=False}. Comparing that pass with plain greedy decoding on the 147 criteria both runs covered, the penalty changed 15 outputs (10\%) and lowered accuracy from 0.735 to 0.714. A library default can silently change ``greedy'' results, so every reported number uses an explicit \texttt{repetition\_penalty=1.0}.
 
 \subsection{Evidence retrieval}
 \maybeinput{tables/evidence_prf}
