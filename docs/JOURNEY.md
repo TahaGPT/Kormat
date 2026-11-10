@@ -53,3 +53,9 @@ Board: https://synverk.abdulhaque.dev/projects/aee8a2fc-a70e-4570-8c66-cfdc59bc0
 **What surprised us:** Qwen3-1.7B card says 1.7B but safetensors total is 2.03B (embeddings counted). Llama-3.2 is gated. LoRA trainable params = 18,464,768 (1.2%) by arithmetic.
 **Decision:** Qwen2.5-1.5B + 0.5B draft (ADR-001); LoRA, disclosed joint training (ADR-002). Caveat recorded: base model was fixed by the shared run; other candidates not evaluated by us.
 **Paper hook:** §II Related Work, §III Materials & Methods (model selection, fine-tuning).
+
+## 2026-11-10 · TGA-7/8/9/10/11/12/3 · Data, split, token stats, SFT builder
+**Goal:** leakage-free fixed split and I/O pipeline. **Machine:** CPU laptop **Run(s):** results/data/, results/split_manifest.json, results/finetune/
+**What we tried:** allow-listed load of ncbi/TrialGPT-Criterion-Annotations (rev 1cfcafde), patient split seed 42, numbered-note parser + pysbd splitter, SFT builder with completion-only mask, golden prompt test.
+**Numbers:** 1015 annotations; train/val/test = 603/206/206 annotations over 37/8/8 patients; tokens per example median 303/344/303, max 622/456/516, none over 1024. Gold validation: 0 bad evidence ids, 0 bad labels. Split patient sets identical to the joint-session split (results/finetune/split_overlap_check.json). Adapter: 18,464,768 params, r=16, alpha=32, all 7 projections.
+**What failed / surprised us:** annotation 883 has a null criterion_text (train); skipped by SFT. Label skew: exclusion is 484/659 "not excluded"; inclusion "not included" only 23.
