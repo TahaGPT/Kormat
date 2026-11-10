@@ -1,10 +1,20 @@
-"""Classification metrics with fixed label lists; INVALID is a predicted-only column."""
+"""Classification metrics with fixed label lists; INVALID is a predicted-only column.
+
+Macro-F1 convention: unweighted mean of per-class F1 over the classes of the section's label set that occur
+in the gold labels or the predictions (a class absent from both is undefined and not counted as 0). The
+fixed-list variant (absent classes scored 0) is reported as `macro_f1_fixed` for transparency.
+"""
 from __future__ import annotations
 
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, precision_recall_fscore_support
 
 from kormat.prompting.labels import ALL_LABELS, INVALID, LABELS
+
+
+def _present(gold, pred, labels):
+    seen = set(gold) | set(pred)
+    return [l for l in labels if l in seen] or list(labels)
 
 
 def _section(gold, pred, labels):
@@ -21,7 +31,9 @@ def _section(gold, pred, labels):
     return {
         "n": len(gold),
         "accuracy": float(accuracy_score(gold, pred)),
-        "macro_f1": float(f1_score(gold, pred, average="macro", labels=list(labels), zero_division=0)),
+        "macro_f1": float(f1_score(gold, pred, average="macro", labels=_present(gold, pred, labels), zero_division=0)),
+        "macro_f1_fixed": float(f1_score(gold, pred, average="macro", labels=list(labels), zero_division=0)),
+        "macro_labels": _present(gold, pred, labels),
         "weighted_f1": float(f1_score(gold, pred, average="weighted", labels=list(labels), zero_division=0)),
         "per_class": {l: {"precision": float(p[i]), "recall": float(r[i]), "f1": float(f[i]), "support": int(s[i])}
                       for i, l in enumerate(labels)},
@@ -47,7 +59,8 @@ def bootstrap_ci(gold, pred, metric="macro_f1", n=1000, seed=42, labels=None, al
     elif metric == "accuracy":
         fn = lambda g, p: float(np.mean(g == p))
     else:
-        fn = lambda g, p: float(f1_score(g, p, average="macro", labels=labels, zero_division=0))
+        fn = lambda g, p: float(f1_score(g, p, average="macro", labels=_present(list(g), list(p), labels),
+                                         zero_division=0))
     rng = np.random.default_rng(seed)
     N = len(gold)
     vals = []
