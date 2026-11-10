@@ -45,3 +45,11 @@ Board: https://synverk.abdulhaque.dev/projects/aee8a2fc-a70e-4570-8c66-cfdc59bc0
 
 ## 2026-11-10 · TGA-1 · repo scaffold
 **What we did:** uv project (Python 3.10, CPU torch 2.5.1, transformers 4.46.3, peft 0.13.2, all pinned), feature folders under `src/kormat/`, run-record convention (`kormat.common.runlog`: every run → `results/<area>/<stamp>_<sha>/{config,env,metrics}.json` + `results/runs.jsonl`), Makefile with a model lock (`flock .model.lock`) so only one large model loads at a time on 15 GB RAM.
+
+## 2026-11-10 · TGA-4/5/6 · literature, model comparison, ADR-001/002
+**Goal:** rubric A1-A3 evidence. **Machine:** CPU laptop (tokenizer-only work, no weights loaded). **Run(s):** results/research/tokenizer_compat.json
+**What we did:** verified 17 sources against arXiv/Nature/Crossref records (docs/research/literature.md, report/refs.bib); pulled config.json for Qwen2.5-1.5B/0.5B, Qwen3-1.7B, SmolLM2-1.7B and (gated Llama-3.2-1B via the unsloth mirror) and computed weight/KV memory (docs/research/model_comparison.md).
+**Numbers:** Qwen2.5-1.5B 1,543,714,304 params, 28 layers, GQA 12/2, KV 28,672 B/token bf16 (SmolLM2 196,608; Qwen3-1.7B 114,688). Tokenizers of 1.5B and 0.5B: identical vocab, merges, special tokens, chat template, file hashes; 0 id mismatches on 50 strings.
+**What surprised us:** Qwen3-1.7B card says 1.7B but safetensors total is 2.03B (embeddings counted). Llama-3.2 is gated. LoRA trainable params = 18,464,768 (1.2%) by arithmetic.
+**Decision:** Qwen2.5-1.5B + 0.5B draft (ADR-001); LoRA, disclosed joint training (ADR-002). Caveat recorded: base model was fixed by the shared run; other candidates not evaluated by us.
+**Paper hook:** §II Related Work, §III Materials & Methods (model selection, fine-tuning).
