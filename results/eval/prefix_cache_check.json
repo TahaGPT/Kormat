@@ -1,0 +1,42 @@
+{
+  "n": 3,
+  "all_match": true,
+  "max_new_tokens": 15,
+  "mean_plain_ms": 11155.074204667471,
+  "mean_cached_ms": 9299.375523665125,
+  "fallbacks": 0,
+  "reused": 2,
+  "rows": [
+    {
+      "annotation_id": 0,
+      "match": true,
+      "n_new": 15,
+      "plain_ms": 12145.38736599934,
+      "cached_ms": 13499.074721999932,
+      "prefix_len": 273,
+      "suffix_len": 70,
+      "prefix_reused": false
+    },
+    {
+      "annotation_id": 1,
+      "match": true,
+      "n_new": 14,
+      "plain_ms": 10668.002997997974,
+      "cached_ms": 7151.916025999526,
+      "prefix_len": 273,
+      "suffix_len": 49,
+      "prefix_reused": true
+    },
+    {
+      "annotation_id": 2,
+      "match": true,
+      "n_new": 14,
+      "plain_ms": 10651.8322500051,
+      "cached_ms": 7247.135822995915,
+      "prefix_len": 273,
+      "suffix_len": 55,
+      "prefix_reused": true
+    }
+  ],
+  "speedup": 1.1995508920227975
+}

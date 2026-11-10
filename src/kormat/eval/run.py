@@ -32,19 +32,71 @@ def _rec(r) -> dict:
     return d
 
 
-def generate_one(model, tok, eos, rec) -> dict:
+class PrefixCache:
+    """Holds the KV cache of the shared per-patient prefix (system msg + note) for one patient at a time."""
+
+    def __init__(self):
+        self.patient = None
+        self.ids = None
+        self.cache = None
+        self.prefill_ms = 0.0
+        self.fallbacks = 0
+        self.reused = 0
+
+
+def _prefix_text(prompt: str) -> str:
+    i = prompt.index("\n\nCriterion type:")
+    return prompt[: i + 2]
+
+
+def generate_one(model, tok, eos, rec, pc: PrefixCache | None = None, return_ids=False) -> dict:
+    import copy
+
     import torch
 
     prompt = render_prompt(tok, build_messages(rec["sentences"], rec["criterion_type"], rec["criterion_text"]))
     enc = tok(prompt, return_tensors="pt")
+    ids = enc["input_ids"]
+    kw = dict(do_sample=False, max_new_tokens=MAX_NEW, eos_token_id=list(eos),
+              pad_token_id=tok.pad_token_id if tok.pad_token_id is not None else min(eos))
+    extra = {}
     t0 = time.perf_counter()
+    if pc is not None:
+        try:
+            pre = tok(_prefix_text(prompt), return_tensors="pt")["input_ids"]
+            pl = pre.shape[1]
+            ok = pl < ids.shape[1] and bool((ids[0, :pl] == pre[0]).all())
+        except ValueError:
+            ok = False
+        if not ok:
+            pc.fallbacks += 1
+            extra = {"prefix_len": 0, "suffix_len": int(ids.shape[1]), "prefix_reused": False}
+            cache = None
+        else:
+            from transformers import DynamicCache
+
+            if pc.patient != rec.get("patient_id") or pc.ids is None or pc.ids.shape != pre.shape \
+                    or not bool((pc.ids == pre).all()):
+                with torch.no_grad():
+                    c = DynamicCache()
+                    model(pre, past_key_values=c, use_cache=True)
+                pc.patient, pc.ids, pc.cache, reused = rec.get("patient_id"), pre, c, False
+            else:
+                reused = True
+                pc.reused += 1
+            cache = copy.deepcopy(pc.cache)
+            extra = {"prefix_len": int(pl), "suffix_len": int(ids.shape[1] - pl), "prefix_reused": reused}
+        if cache is not None:
+            kw["past_key_values"] = cache
     with torch.no_grad():
-        out = model.generate(**enc, do_sample=False, max_new_tokens=MAX_NEW, eos_token_id=list(eos),
-                             pad_token_id=tok.pad_token_id if tok.pad_token_id is not None else min(eos))
+        out = model.generate(input_ids=ids, attention_mask=enc["attention_mask"], **kw)
     ms = (time.perf_counter() - t0) * 1000
-    new = out[0, enc["input_ids"].shape[1]:]
-    return {"raw_output": tok.decode(new, skip_special_tokens=True), "latency_ms": ms,
-            "n_prompt_tokens": int(enc["input_ids"].shape[1]), "n_new_tokens": int(new.shape[0])}
+    new = out[0, ids.shape[1]:]
+    res = {"raw_output": tok.decode(new, skip_special_tokens=True), "latency_ms": ms,
+           "n_prompt_tokens": int(ids.shape[1]), "n_new_tokens": int(new.shape[0]), **extra}
+    if return_ids:
+        res["new_ids"] = new.tolist()
+    return res
 
 
 def _row(rec, gen) -> dict:
@@ -60,6 +112,7 @@ def _row(rec, gen) -> dict:
                                          rec["criterion_text"]),
         "latency_ms": gen["latency_ms"], "n_prompt_tokens": gen["n_prompt_tokens"],
         "n_new_tokens": gen["n_new_tokens"],
+        **{k: gen[k] for k in ("prefix_len", "suffix_len", "prefix_reused") if k in gen},
     }
 
 
@@ -80,12 +133,19 @@ def compute_metrics(rows: list[dict], n_boot: int = 1000) -> dict:
     return m
 
 
-def run_eval(records, loaded, out_dir: Path, split: str, name: str, adapter=None, limit=None, n_boot=1000):
+def run_eval(records, loaded, out_dir: Path, split: str, name: str, adapter=None, limit=None, n_boot=1000,
+             prefix_cache=False, chunk=None):
     """loaded: object with .model and .tokenizer. Resumable via predictions.jsonl."""
     from kormat.modeling import eos_ids
 
     out_dir.mkdir(parents=True, exist_ok=True)
     recs = [_rec(r) for r in records][: limit or None]
+    if prefix_cache:  # group by patient so one prefix prefill serves all its criteria
+        order = {}
+        for r in recs:
+            order.setdefault(r.get("patient_id"), len(order))
+        recs.sort(key=lambda r: order[r.get("patient_id")])
+    pc = PrefixCache() if prefix_cache else None
     pred_path = out_dir / "predictions.jsonl"
     rows, done = [], set()
     if pred_path.exists():
@@ -96,22 +156,31 @@ def run_eval(records, loaded, out_dir: Path, split: str, name: str, adapter=None
                 done.add(r["annotation_id"])
     cfg = {"name": name, "split": split, "limit": limit, "adapter": adapter,
            "model_id": getattr(loaded, "model_id", None),
+           "prefix_cache": prefix_cache, "chunk": chunk,
            "decoding": {"do_sample": False, "max_new_tokens": MAX_NEW, "batch_size": 1,
                         "dtype": str(getattr(loaded, "dtype", "float32"))}}
     (out_dir / "config.json").write_text(json.dumps(cfg, indent=2, default=str))
     (out_dir / "env.json").write_text(json.dumps(runlog.capture_env(), indent=2))
     eos = eos_ids(loaded.tokenizer, loaded.model)
     with pred_path.open("a", encoding="utf-8") as f:
+        n_new = 0
         for rec in recs:
             if rec["annotation_id"] in done:
                 continue
-            row = _row(rec, generate_one(loaded.model, loaded.tokenizer, eos, rec))
+            if chunk is not None and n_new >= chunk:
+                break
+            n_new += 1
+            row = _row(rec, generate_one(loaded.model, loaded.tokenizer, eos, rec, pc))
             f.write(json.dumps(row) + "\n")
             f.flush()
             rows.append(row)
     wanted = {r["annotation_id"] for r in recs}
     rows = [r for r in rows if r["annotation_id"] in wanted]
     metrics = compute_metrics(rows, n_boot)
+    metrics["n_requested"] = len(recs)
+    metrics["complete"] = len(rows) >= len(recs)
+    if pc is not None:
+        metrics["prefix_cache"] = {"reused": pc.reused, "fallbacks": pc.fallbacks}
     (out_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
     if rows:
         for sec in ("overall", "inclusion", "exclusion"):
@@ -126,6 +195,8 @@ def main(argv=None):
     ap.add_argument("--split", choices=["val", "test"], required=True)
     ap.add_argument("--limit", type=int)
     ap.add_argument("--out")
+    ap.add_argument("--prefix-cache", action="store_true", help="reuse per-patient prefix KV cache")
+    ap.add_argument("--chunk", type=int, help="process at most N new records, then write metrics and exit")
     a = ap.parse_args(argv)
     if a.split == "test" and os.environ.get("KORMAT_ALLOW_TEST") != "1":
         raise SystemExit("Refusing --split test: sealed. Set KORMAT_ALLOW_TEST=1 (lead only).")
@@ -139,7 +210,8 @@ def main(argv=None):
     for k in kinds:
         loaded = load_target(finetuned=(k == "ft"), merge=True)
         out = base_out / k if a.model == "both" else base_out
-        m = run_eval(records, loaded, out, a.split, k, adapter=getattr(loaded, "adapter", None), limit=a.limit)
+        m = run_eval(records, loaded, out, a.split, k, adapter=getattr(loaded, "adapter", None), limit=a.limit,
+                     prefix_cache=a.prefix_cache, chunk=a.chunk)
         print(k, "n", m["n"], "acc", m["classification"]["overall"]["accuracy"], "macroF1",
               m["classification"]["overall"]["macro_f1"], "invalid", m["invalid_rate"],
               "lat_ms", round(m["mean_latency_ms"], 1))
