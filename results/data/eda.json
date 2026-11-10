@@ -1,0 +1,84 @@
+{
+  "dropped_columns": [
+    "gpt4_explanation",
+    "explanation_correctness",
+    "gpt4_sentences",
+    "gpt4_eligibility",
+    "training"
+  ],
+  "empty_evidence_by_label": {
+    "included": 7,
+    "not applicable": 44,
+    "not enough information": 184,
+    "not excluded": 366,
+    "not included": 9
+  },
+  "evidence_len": {
+    "max": 9,
+    "mean": 0.6,
+    "median": 0.0,
+    "min": 0,
+    "p95": 3.0,
+    "p99": 5.0
+  },
+  "evidence_len_distribution": {
+    "0": 610,
+    "1": 302,
+    "2": 47,
+    "3": 24,
+    "4": 15,
+    "5": 11,
+    "6": 1,
+    "7": 3,
+    "8": 1,
+    "9": 1
+  },
+  "gold_validation": {
+    "bad_label": {
+      "annotation_ids": [],
+      "count": 0
+    },
+    "empty_criterion_text": {
+      "annotation_ids": [
+        883
+      ],
+      "count": 1
+    },
+    "empty_note": {
+      "annotation_ids": [],
+      "count": 0
+    },
+    "evidence_not_in_note": {
+      "annotation_ids": [],
+      "count": 0
+    },
+    "non_contiguous_ids": {
+      "annotation_ids": [],
+      "count": 0
+    }
+  },
+  "label_by_type": {
+    "exclusion": {
+      "excluded": 10,
+      "not applicable": 46,
+      "not enough information": 119,
+      "not excluded": 484
+    },
+    "inclusion": {
+      "included": 150,
+      "not applicable": 9,
+      "not enough information": 174,
+      "not included": 23
+    }
+  },
+  "n_patients": 53,
+  "n_rows": 1015,
+  "sentences_per_note": {
+    "max": 14,
+    "mean": 6.2,
+    "median": 6.0,
+    "min": 3,
+    "p95": 9.0,
+    "p99": 14.0
+  }
+}

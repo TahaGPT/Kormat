@@ -1,0 +1,55 @@
+{
+  "all": {
+    "max": 622,
+    "mean": 326.5,
+    "median": 310.0,
+    "min": 240,
+    "p95": 468.6999999999998,
+    "p99": 537.87
+  },
+  "gold_evidence_lost": 0,
+  "max_len": 1024,
+  "note": "no example exceeds max_len, so nothing is truncated or dropped (except the single null-criterion row)",
+  "over_max_len": {
+    "test": {
+      "annotation_ids": [],
+      "n_over_max_len": 0
+    },
+    "train": {
+      "annotation_ids": [],
+      "n_over_max_len": 0
+    },
+    "val": {
+      "annotation_ids": [],
+      "n_over_max_len": 0
+    }
+  },
+  "per_split": {
+    "test": {
+      "max": 516,
+      "mean": 310.4,
+      "median": 303.0,
+      "min": 250,
+      "p95": 378.75,
+      "p99": 406.74999999999994
+    },
+    "train": {
+      "max": 622,
+      "mean": 327.4,
+      "median": 303.0,
+      "min": 240,
+      "p95": 493.0,
+      "p99": 542.98
+    },
+    "val": {
+      "max": 456,
+      "mean": 340.0,
+      "median": 344.0,
+      "min": 280,
+      "p95": 389.0,
+      "p99": 417.5499999999999
+    }
+  },
+  "policy": "max_len=1024 tokens (full chat = prompt + target + <|im_end|>). Examples above max_len are dropped from SFT, never cut: truncating the note would delete sentences and break evidence IDs, truncating the end would remove the target. Evaluation uses the full untruncated prompt.",
+  "tokenizer": "Qwen/Qwen2.5-1.5B-Instruct"
+}

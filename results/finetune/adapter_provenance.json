@@ -1,0 +1,42 @@
+{
+  "source": "arceus1rk/eligitrace-qwen2.5-1.5b-lora (disclosed joint training session)",
+  "files_sha256": {
+    ".gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+    "README.md": "0a7a696dbb4034572e91144d01f0d2fc63335c38216f12bd1cace0afbd1d9752",
+    "adapter_config.json": "a90ae386e5057adef1783f41d917f2bd83c95e399240da7829efaafc9e53df10",
+    "adapter_model.safetensors": "eb1843b2a2921a70508a03bbd18a551e75709b47babe33fca4a74d36a87144ad",
+    "added_tokens.json": "f0acedf99e19ec0a5b797ffbd0b94328172ccd90f7f385bbc521cda2701b03ab",
+    "chat_template.jinja": "8aa40ce145adb73cb3a75194dc0224702a95850ec5275cabb728496bbd749fc6",
+    "merges.txt": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+    "special_tokens_map.json": "57255613bbe23c9497211ca68561ff429a51e871dbaf5a59998fa4c8f7fe168a",
+    "tokenizer.json": "9c5ae00e602b8860cbd784ba82a8aa14e8feecec692e7076590d014d7b7fdafa",
+    "tokenizer_config.json": "5fd4cea2574beb6b70ba31582179880d331b723f5b5119ee67c29d45b983f7be",
+    "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+  },
+  "n_tensors": 392,
+  "trainable_params": 18464768,
+  "dtypes": [
+    "F32"
+  ],
+  "adapter_config": {
+    "base_model_name_or_path": "Qwen/Qwen2.5-1.5B-Instruct",
+    "peft_type": "LORA",
+    "task_type": "CAUSAL_LM",
+    "r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "v_proj",
+      "o_proj",
+      "q_proj",
+      "down_proj",
+      "up_proj",
+      "gate_proj",
+      "k_proj"
+    ],
+    "use_rslora": false,
+    "use_dora": false,
+    "bias": "none"
+  },
+  "note": "computed from file bytes/headers only; no model loaded"
+}

@@ -1,0 +1,131 @@
+{
+  "algorithm": "ids = sorted(df.patient_id.unique()); rng = np.random.default_rng(42); rng.shuffle(ids); train=ids[:37]; val=ids[37:45]; test=ids[45:]",
+  "dataset": "ncbi/TrialGPT-Criterion-Annotations",
+  "dataset_revision": "1cfcafde94a1560a33b4addc1638664fe28fc059",
+  "label_counts": {
+    "test": {
+      "exclusion": {
+        "not applicable": 12,
+        "not enough information": 28,
+        "not excluded": 91
+      },
+      "inclusion": {
+        "included": 27,
+        "not applicable": 3,
+        "not enough information": 38,
+        "not included": 7
+      }
+    },
+    "train": {
+      "exclusion": {
+        "excluded": 8,
+        "not applicable": 23,
+        "not enough information": 65,
+        "not excluded": 292
+      },
+      "inclusion": {
+        "included": 88,
+        "not applicable": 5,
+        "not enough information": 109,
+        "not included": 13
+      }
+    },
+    "val": {
+      "exclusion": {
+        "excluded": 2,
+        "not applicable": 11,
+        "not enough information": 26,
+        "not excluded": 101
+      },
+      "inclusion": {
+        "included": 35,
+        "not applicable": 1,
+        "not enough information": 27,
+        "not included": 3
+      }
+    }
+  },
+  "n_annotations": {
+    "test": 206,
+    "train": 603,
+    "val": 206
+  },
+  "n_patients": {
+    "test": 8,
+    "train": 37,
+    "val": 8
+  },
+  "n_trials": {
+    "test": 16,
+    "train": 72,
+    "val": 16
+  },
+  "n_trials_total": 103,
+  "patients": {
+    "test": [
+      "sigir-201422",
+      "sigir-20158",
+      "sigir-201411",
+      "sigir-201516",
+      "sigir-201513",
+      "sigir-201410",
+      "sigir-201421",
+      "sigir-201417"
+    ],
+    "train": [
+      "sigir-20148",
+      "sigir-201416",
+      "sigir-201517",
+      "sigir-201519",
+      "sigir-20159",
+      "sigir-201425",
+      "sigir-201414",
+      "sigir-20157",
+      "sigir-201514",
+      "sigir-20144",
+      "sigir-20152",
+      "sigir-20151",
+      "sigir-201429",
+      "sigir-201426",
+      "sigir-20145",
+      "sigir-201518",
+      "sigir-20154",
+      "sigir-201521",
+      "sigir-201413",
+      "sigir-20146",
+      "sigir-201511",
+      "sigir-20147",
+      "sigir-20155",
+      "sigir-201418",
+      "sigir-20156",
+      "sigir-20143",
+      "sigir-20149",
+      "sigir-201523",
+      "sigir-201424",
+      "sigir-201524",
+      "sigir-201512",
+      "sigir-201423",
+      "sigir-201412",
+      "sigir-201510",
+      "sigir-201419",
+      "sigir-201520",
+      "sigir-20153"
+    ],
+    "val": [
+      "sigir-201415",
+      "sigir-20142",
+      "sigir-201430",
+      "sigir-201427",
+      "sigir-201515",
+      "sigir-20141",
+      "sigir-201420",
+      "sigir-201522"
+    ]
+  },
+  "seed": 42,
+  "sha256": {
+    "test": "f836ad1564c93f812f302b7e82af66dd581eaa0665e61646d8642f448b857311",
+    "train": "98c021511a61c76e9aecf4fb773b410f83ec1bf318990927cd324c1c5d1e1539",
+    "val": "5836b7dbb0f0426e2c4be4ae61ca837c8e3c97638f7cdfb2383a67df038d9147"
+  }
+}

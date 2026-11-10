@@ -1,0 +1,27 @@
+{
+  "source": "ruhank-dev/eligitrace data/splits/split_manifest.json (patient-ID comparison only)",
+  "per_split": {
+    "train": {
+      "ours": 37,
+      "theirs": 37,
+      "identical": true,
+      "only_ours": [],
+      "only_theirs": []
+    },
+    "val": {
+      "ours": 8,
+      "theirs": 8,
+      "identical": true,
+      "only_ours": [],
+      "only_theirs": []
+    },
+    "test": {
+      "ours": 8,
+      "theirs": 8,
+      "identical": true,
+      "only_ours": [],
+      "only_theirs": []
+    }
+  },
+  "all_identical": true
+}
