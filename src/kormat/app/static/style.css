@@ -41,3 +41,5 @@ details summary{cursor:pointer;color:var(--a)}pre{white-space:pre-wrap;backgroun
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--a);border-radius:50%;animation:s 1s linear infinite;vertical-align:-2px}@keyframes s{to{transform:rotate(360deg)}}
 .sr{position:absolute;left:-9999px}
 @media print{header,nav,.no-print{display:none}}
+a{color:var(--a)}a.btn{display:inline-block;text-decoration:none;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px 12px}a.btn:hover{border-color:var(--a)}
+input[type=checkbox]{width:auto;margin-right:4px}#labmodes label{display:inline-flex;align-items:center}

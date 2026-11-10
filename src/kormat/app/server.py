@@ -95,6 +95,8 @@ def create_app(engine=None, db_path=None) -> FastAPI:
     app.state.engine = engine or eng.make_engine()
     app.state.store = Store(db_path) if db_path else Store()
 
+    _cache: dict = {}
+
     @app.on_event("startup")
     def _startup():
         import os
@@ -141,6 +143,8 @@ def create_app(engine=None, db_path=None) -> FastAPI:
 
     @app.get("/api/samples")
     def samples():
+        if "samples" in _cache:
+            return _cache["samples"]
         out = []
         try:
             from kormat.data import load_split  # train/val only: the test split is sealed
@@ -155,7 +159,8 @@ def create_app(engine=None, db_path=None) -> FastAPI:
                     break
         except Exception:
             pass
-        return {"samples": [BUILTIN_SAMPLE] + out[:6]}
+        _cache["samples"] = {"samples": [BUILTIN_SAMPLE] + out[:6]}
+        return _cache["samples"]
 
     def _samples_from(rows, split):
         res: dict[str, dict] = {}

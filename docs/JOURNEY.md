@@ -71,3 +71,10 @@ Board: https://synverk.abdulhaque.dev/projects/aee8a2fc-a70e-4570-8c66-cfdc59bc0
 **What failed / surprised us:** no TeX distribution on the laptop (pdflatex/latexmk not found), so the paper is NOT compiled yet; brace/env balance and cite-key coverage were checked by script. Use Overleaf (upload report/) or install TeX Live, then `cd report && make`.
 **Open:** Results section is a skeleton; methods text must be re-checked against the final code (spec decoder, app, eval evidence rules) and the shared run's training logs.
 **Paper hook:** whole report.
+
+## 2026-11-10 · TGA-36..41 · application (engine, API, UI, lab, export, history, startup)
+**Goal:** one browser app for Task 6. **Machine:** CPU laptop **Run(s):** results/app/
+**What we built:** `kormat.app` (engine with fake/real modes and a generation lock, FastAPI server with friendly validation errors, aggregation rule, criteria parser, SQLite history, print-friendly HTML report + JSON), static UI (dark/light, disclaimer banner, evidence highlighting, lab with live charts and token-equality badge, stored-results panel), `scripts/start_app.sh`. Tests run on the fake engine: aggregation, parser, every validation error, recovery after exceptions, offline NCT fetch, restart persistence.
+**Decision:** conservative aggregation rule, unknowns never count as eligibility (ADR-004).
+**What surprised us:** RAM is shared with other agents, so real-model smoke runs queue behind the model lock; UI layout was verified with the fake engine (screenshots in report/figures/app_*.png are fake-engine layouts, not results).
+**Paper hook:** §III application workflow; screenshots figure.
