@@ -7,7 +7,8 @@ from kormat.prompting.labels import ALL_LABELS
 # Toy (inclusion only): gold = [inc, inc, notinc, nei], pred = [inc, notinc, notinc, INVALID]
 # included: tp1 fp0 fn1 -> P1 R.5 F1 2/3 ; not included: tp1 fp1 fn0 -> P.5 R1 F1 2/3
 # nei: tp0 fn1 -> F1 0 ; not applicable: support 0 -> F1 0 (zero_division=0)
-# macro = (2/3+2/3+0+0)/4 = 1/3 ; accuracy = 2/4
+# macro (present classes: inc, notinc, nei; n/a absent from gold AND pred) = (2/3+2/3+0)/3 = 4/9
+# macro_fixed (all 4 labels, absent -> 0) = (2/3+2/3+0+0)/4 = 1/3 ; accuracy = 2/4
 G = ["included", "included", "not included", "not enough information"]
 P = ["included", "not included", "not included", "INVALID"]
 T = ["inclusion"] * 4
@@ -15,7 +16,9 @@ T = ["inclusion"] * 4
 
 def test_hand_computed():
     r = classification_report(G, P, T)["inclusion"]
-    assert abs(r["macro_f1"] - 1 / 3) < 1e-9
+    assert abs(r["macro_f1"] - 4 / 9) < 1e-9
+    assert abs(r["macro_f1_fixed"] - 1 / 3) < 1e-9
+    assert r["macro_labels"] == ["included", "not included", "not enough information"]
     assert r["accuracy"] == 0.5
     assert abs(r["per_class"]["included"]["f1"] - 2 / 3) < 1e-9
     assert r["per_class"]["not enough information"]["support"] == 1
