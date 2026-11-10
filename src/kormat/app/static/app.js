@@ -124,7 +124,7 @@ function updateRunLabel() {
 }
 function renderCrits() {
   $("#crits").innerHTML = crits.map((c, i) => `<div class="crit${c.type === "exclusion" ? " excl" : ""}"><select aria-label="Criterion ${i + 1} type" data-i="${i}" data-f="type">
-   <option value="inclusion" ${c.type === "inclusion" ? "selected" : ""}>Inclusion — patient must meet this</option><option value="exclusion" ${c.type === "exclusion" ? "selected" : ""}>Exclusion — patient must NOT have this</option></select>
+   <option value="inclusion" ${c.type === "inclusion" ? "selected" : ""}>Inclusion · must meet</option><option value="exclusion" ${c.type === "exclusion" ? "selected" : ""}>Exclusion · must lack</option></select>
    <input aria-label="Criterion ${i + 1} text" data-i="${i}" data-f="text" value="${esc(c.text)}"><button class="btn" type="button" data-del="${i}" aria-label="Remove criterion ${i + 1}">${ico("x")}</button></div>`).join("")
     || '<p class="help">No criteria yet. Split pasted text, fetch an NCT trial, or add one by hand.</p>';
   updateRunLabel();
