@@ -1,0 +1,7 @@
+{
+  "modes": "nocache",
+  "grid": "128:16,128:32,512:8,1024:4",
+  "reps": 2,
+  "name": "nocache",
+  "plot": false
+}
