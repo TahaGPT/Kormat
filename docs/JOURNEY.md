@@ -203,3 +203,8 @@ The base model never outputs "not enough information" or "not excluded". It labe
 **Paper:** all Results subsections written from committed numbers. A factual slip was caught in review: the KV cache is 28 KB/token in bf16 and 56 KB in fp32, not 28 KB in fp32.
 
 **UI:** monochrome Swiss redesign (ui-ux-pro-max design system) with a transparent logo, a loading screen with a three.js helix, a hero 3D object that pauses during inference, colour-independent label chips and self-describing mode cards. The lead review fixed a hero text/3D overlap and truncated criterion-type labels.
+
+## 2026-11-11 · TGA-21 · Validation run + repetition-penalty ablation; evaluation closed
+**Fine-tuned, val (206):** accuracy 0.733 [0.675, 0.791], macro-F1 0.431 [0.366, 0.558], evidence micro-F1 0.55, 0 INVALID. Validation accuracy equals test accuracy, so the test result is not a lucky patient draw.
+**Ablation:** on the 147 criteria shared with the first (accidental) run, repetition_penalty 1.1 vs plain greedy changed 15 outputs (10 %) and accuracy went 0.714 → 0.735.
+**Dropped for time:** base model on val. It was stopped at 00:05 to free CPU/RAM for the demo recording; before/after rests on the test split.

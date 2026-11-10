@@ -19,6 +19,22 @@ A browser app puts it all together. It runs entirely on a **CPU laptop**.
 ## Status
 Submission for GenAI Assignment 2 (10 Nov 2026). The full research log, from the first plan to the final numbers, is [`docs/JOURNEY.md`](docs/JOURNEY.md). Design decisions are recorded in [`docs/decisions/`](docs/decisions/) and the paper is [`report/main.pdf`](report/main.pdf).
 
+## Results (CPU laptop, plain greedy decoding)
+| | split | accuracy [95% CI] | macro-F1 [95% CI] | evidence micro-F1 |
+|---|---|---|---|---|
+| Base Qwen2.5-1.5B-Instruct | test (206) | 0.160 [0.112, 0.209] | 0.129 [0.101, 0.158] | 0.17 |
+| + LoRA adapter (fine-tuned) | test (206) | **0.733** [0.675, 0.791] | **0.528** [0.456, 0.594] | **0.58** |
+| + LoRA adapter (fine-tuned) | val (206) | 0.733 [0.675, 0.791] | 0.431 [0.366, 0.558] | 0.55 |
+
+Fine-tuning fixes 129 test criteria and breaks 11 (McNemar p ≈ 1e-26). The main remaining failure is treating missing evidence on exclusion criteria as "not excluded" ([`docs/research/error_analysis.md`](docs/research/error_analysis.md)).
+
+Systems results:
+- **KV cache:** token-identical to the no-cache reference; 7–27× faster decoding.
+- **Tiled online-softmax attention:** max error 2.5e-6 in fp32; about 60× less extra memory at 4,096 tokens, but slower than PyTorch's fused kernel on CPU.
+- **Speculative decoding:** lossless, with 73–93 % draft acceptance; about 1.0× end-to-end for short CPU answers.
+
+Paper: [`report/main.pdf`](report/main.pdf).
+
 ## Hardware used
 Everything except the LoRA training ran on a **CPU laptop**: Intel i5-10310U (4 cores / 8 threads), 15 GB RAM, no GPU, Ubuntu 22.04, Python 3.10.
 - Memory: the merged fine-tuned 1.5B model in fp32 needs about 6.3 GB RSS; target and draft together about 8.2 GB (`results/probe/summary.md`).
