@@ -1,0 +1,8 @@
+{
+  "workload": "A",
+  "n": 8,
+  "gammas": "1,2,3,4,6",
+  "max_new": 64,
+  "plot": false,
+  "measure_c": 1
+}

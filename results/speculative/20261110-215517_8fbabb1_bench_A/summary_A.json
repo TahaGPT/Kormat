@@ -1,0 +1,100 @@
+{
+ "workload": "A",
+ "c": 0.336633910280837,
+ "meta": {
+  "loadavg_start": [
+   3.5166015625,
+   3.90185546875,
+   4.23681640625
+  ],
+  "c": 0.336633910280837,
+  "step_ms": {
+   "draft_q1": 146.1942700043437,
+   "target_q1": 434.28266000410076
+  },
+  "verify_ms": {
+   "2": 730.8202365020406,
+   "3": 734.4228139991174,
+   "4": 736.0889619958471,
+   "5": 742.1261180024885,
+   "7": 755.507393998414,
+   "9": 764.1417625018221
+  },
+  "c_P": 330,
+  "sample_output": "{\"label\": \"not enough information\", \"evidence\": []}",
+  "loadavg_end": [
+   4.49267578125,
+   4.40478515625,
+   4.35791015625
+  ]
+ },
+ "n_prompts": 8,
+ "by_gamma": [
+  {
+   "gamma": 1,
+   "acceptance_rate": 0.9322033898305084,
+   "alpha_hat": 0.9322033898305084,
+   "mean_emitted_per_iter": 1.9322033898305084,
+   "all_exact": true,
+   "speedup_total": 0.9175112453353014,
+   "speedup_decode": 0.9269857302075238,
+   "tok_s_median": 1.205466984512353,
+   "peak_rss_mb_median": 8285.642578125,
+   "kv_mb_median": 27.2421875
+  },
+  {
+   "gamma": 2,
+   "acceptance_rate": 0.8478260869565217,
+   "alpha_hat": 0.896551724137931,
+   "mean_emitted_per_iter": 2.6956521739130435,
+   "all_exact": true,
+   "speedup_total": 0.8789813542780844,
+   "speedup_decode": 1.0515514972209812,
+   "tok_s_median": 1.1671089276981879,
+   "peak_rss_mb_median": 8285.3046875,
+   "kv_mb_median": 27.3203125
+  },
+  {
+   "gamma": 3,
+   "acceptance_rate": 0.8857142857142857,
+   "alpha_hat": 0.9489795918367347,
+   "mean_emitted_per_iter": 3.657142857142857,
+   "all_exact": true,
+   "speedup_total": 0.9277963073058101,
+   "speedup_decode": 1.1921974270930324,
+   "tok_s_median": 1.2416775021195614,
+   "peak_rss_mb_median": 8285.275390625,
+   "kv_mb_median": 27.3984375
+  },
+  {
+   "gamma": 4,
+   "acceptance_rate": 0.8275862068965517,
+   "alpha_hat": 0.9230769230769231,
+   "mean_emitted_per_iter": 4.310344827586207,
+   "all_exact": true,
+   "speedup_total": 1.0145143150440268,
+   "speedup_decode": 1.3984896922049823,
+   "tok_s_median": 1.2715918144976202,
+   "peak_rss_mb_median": 8285.625,
+   "kv_mb_median": 27.3203125
+  },
+  {
+   "gamma": 6,
+   "acceptance_rate": 0.7333333333333333,
+   "alpha_hat": 0.9016393442622951,
+   "mean_emitted_per_iter": 5.4,
+   "all_exact": true,
+   "speedup_total": 0.9941849651515053,
+   "speedup_decode": 1.2632477678852716,
+   "tok_s_median": 1.3393810545745362,
+   "peak_rss_mb_median": 8285.642578125,
+   "kv_mb_median": 27.25390625
+  }
+ ],
+ "baseline": {
+  "tok_s_median": 1.3712603716946705,
+  "peak_rss_mb_median": 8279.7109375,
+  "kv_mb_median": 19.03125,
+  "n_new_median": 14.5
+ }
+}
