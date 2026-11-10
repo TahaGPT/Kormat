@@ -1,0 +1,62 @@
+{
+  "model": "base + shared adapter (unmerged), fp32, greedy, max_new_tokens=48",
+  "n": 5,
+  "all_valid_json": true,
+  "n_valid": 5,
+  "n_label_allowed": 5,
+  "examples": [
+    {
+      "annotation_id": 43,
+      "criterion_type": "inclusion",
+      "output": "{\"label\": \"not enough information\", \"evidence\": [0]}",
+      "valid_json_schema": true,
+      "label_in_allowed_set": true,
+      "gold_label": "not enough information",
+      "gold_evidence": [
+        0
+      ]
+    },
+    {
+      "annotation_id": 44,
+      "criterion_type": "exclusion",
+      "output": "{\"label\": \"not enough information\", \"evidence\": []}",
+      "valid_json_schema": true,
+      "label_in_allowed_set": true,
+      "gold_label": "not excluded",
+      "gold_evidence": [
+        0
+      ]
+    },
+    {
+      "annotation_id": 45,
+      "criterion_type": "exclusion",
+      "output": "{\"label\": \"not enough information\", \"evidence\": [0]}",
+      "valid_json_schema": true,
+      "label_in_allowed_set": true,
+      "gold_label": "not enough information",
+      "gold_evidence": [
+        0
+      ]
+    },
+    {
+      "annotation_id": 46,
+      "criterion_type": "inclusion",
+      "output": "{\"label\": \"not enough information\", \"evidence\": [0]}",
+      "valid_json_schema": true,
+      "label_in_allowed_set": true,
+      "gold_label": "not included",
+      "gold_evidence": [
+        0
+      ]
+    },
+    {
+      "annotation_id": 47,
+      "criterion_type": "inclusion",
+      "output": "{\"label\": \"not enough information\", \"evidence\": []}",
+      "valid_json_schema": true,
+      "label_in_allowed_set": true,
+      "gold_label": "not enough information",
+      "gold_evidence": []
+    }
+  ]
+}
