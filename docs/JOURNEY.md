@@ -173,3 +173,21 @@ All speculative outputs were token-identical to the baseline. Baseline 1.37 tok/
 **What we did:** loaded target+LoRA+draft (15.3 s, weights cached), screened 4 val criteria with kv_cached (~9.5-10.4 s each), ran the lab on one criterion (24 new tokens): no_cache, kv_cached, speculative (gamma 4), hf_generate. Then drove the live UI at :8020 with scripts/app_screenshots.py (report/figures/app_real_*.png).
 **Numbers:** all 3 other modes token-identical to kv_cached; speculative acceptance 91.7%; decode ms no_cache 68866 / kv 6208 / spec 4015 / hf 6202 (single run, contended CPU, not a benchmark).
 **Paper hook:** application screenshots figure; stored-study panel for real benchmarks.
+
+## 2026-11-10 · TGA-22/23 · Fine-tuned model on the sealed test split + error analysis
+**Run:** `results/eval/test_final/ft/` (plain greedy, fp32, prefix cache reused for 193/206 criteria, mean 8.4 s per criterion). The configuration was frozen before the first test access, and `results/test_access.log` shows a single access.
+
+**Numbers (206 criteria, 8 patients):**
+| | accuracy | macro-F1 |
+|---|---|---|
+| overall | 0.733 [0.675, 0.791] | 0.528 [0.456, 0.594] |
+| inclusion (75) | 0.787 | 0.425 |
+| exclusion (131) | 0.702 | 0.398 |
+
+Evidence: micro P/R/F1 0.53/0.63/0.58; macro F1 (all records) 0.82; empty/non-empty cells 132/13/16/45. 0 INVALID outputs, 0 hallucinated IDs.
+
+**What failed:** every exclusion criterion with gold label "not enough information" (28) was predicted "not excluded", i.e. absence treated as proof. Training skew explains it: 292 of 388 training exclusion criteria are "not excluded", 218 of them without evidence. There are also 9 "not applicable" exclusions predicted "not excluded" and 14 over-abstentions on facts that need clinical inference. Details: `docs/research/error_analysis.md`.
+
+**Shared-run logs:** found in the co-trainer's public repo, copied unmodified with source and commit to `results/finetune/shared_run/`, and plotted by us (`training_curves_shared.pdf`).
+
+**Paper hook:** §V-B/C/D, Table errors, Fig. training curves.
