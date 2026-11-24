@@ -139,21 +139,24 @@ $("#parse").onclick = async () => {
 };
 $("#fetchnct").onclick = async () => {
   const b = $("#fetchnct"); b.disabled = true;
-  try { showErr($("#screenerr")); const d = await api("/api/nct/" + encodeURIComponent($("#nct").value.trim())); $("#block").value = d.block; crits = d.criteria; renderCrits(); }
+  try { showErr($("#screenerr")); const id = $("#nct").value.trim().toUpperCase(); if (!/^NCT\d{8}$/.test(id)) throw new Error("Enter a ClinicalTrials.gov ID such as NCT01234567 (NCT followed by 8 digits)."); const d = await api("/api/nct/" + encodeURIComponent(id)); $("#block").value = d.block; crits = d.criteria; renderCrits(); }
   catch (e) { showErr($("#screenerr"), e); }
   b.disabled = false;
 };
 renderCrits();
 
 // screening, with a determinate per-criterion progress estimate (server answers once at the end)
-let perCrit = 4000;
+let perCrit = 9000; // measured ~8-10 s per criterion on the CPU laptop; refined after each run
 $("#run").onclick = async () => {
   const b = $("#run"), n = crits.length, p = $("#prog"), bar = $("#progbar"); b.disabled = true; showErr($("#screenerr"));
   const oldLbl = $("#runlbl").textContent; $("#runlbl").textContent = "Screening..."; b.querySelector("svg").outerHTML = '<span class="spinner"></span>';
   p.hidden = false; bar.style.width = "0%"; $("#results").innerHTML = '<div class="card"><h2>Screening...</h2><div class="sk"></div><div class="sk" style="width:80%"></div><div class="sk" style="width:90%"></div><div class="sk" style="width:60%"></div></div>';
   const t0 = performance.now(), tick = () => {
     const k = Math.min(n - 1, Math.floor((performance.now() - t0) / perCrit)) + 1;
-    $("#runstat").textContent = `Screening criterion ${Math.min(k, n)} of ${n}...`; bar.style.width = `${Math.round((k - 1) / Math.max(n, 1) * 100)}%`;
+    const el = Math.round((performance.now() - t0) / 1000), exp = Math.round(perCrit * n / 1000);
+    $("#runstat").textContent = (performance.now() - t0) < perCrit * n
+      ? `Screening about ${Math.min(k, n)} of ${n} criteria (estimate) - ${el}s elapsed of ~${exp}s`
+      : `Still working: the server returns all ${n} results together - ${el}s elapsed (estimate was ~${exp}s)`; bar.style.width = `${Math.round((k - 1) / Math.max(n, 1) * 100)}%`;
   };
   tick(); const iv = setInterval(tick, 300); busy(true);
   try {
