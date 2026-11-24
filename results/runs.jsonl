@@ -1,0 +1,10 @@
+{"event": "start", "area": "kvcache", "run_id": "20261110-193933_24fd5b1_equiv_fp32", "time": "20261110-193933"}
+{"event": "finish", "area": "kvcache", "run_id": "20261110-193933_24fd5b1_equiv_fp32", "time": "20261110-205252", "headline": "fp32: 5/5 cells exact token match"}
+{"event": "start", "area": "speculative", "run_id": "20261110-205903_20fbd3b_equiv_fp32", "time": "20261110-205903"}
+{"event": "finish", "area": "speculative", "run_id": "20261110-205903_20fbd3b_equiv_fp32", "time": "20261110-210533", "headline": "fp32 own spec exact 18/18; hf assisted 6/6"}
+{"event": "start", "area": "kvcache", "run_id": "20261110-211114_1fd13f8_bench_kv", "time": "20261110-211114"}
+{"event": "finish", "area": "kvcache", "run_id": "20261110-211114_1fd13f8_bench_kv", "time": "20261110-212530", "headline": "kv bench modes=kv cells=7"}
+{"event": "start", "area": "kvcache", "run_id": "20261110-213732_1fd13f8_bench_nocache", "time": "20261110-213732"}
+{"event": "finish", "area": "kvcache", "run_id": "20261110-213732_1fd13f8_bench_nocache", "time": "20261110-214655", "headline": "kv bench modes=nocache cells=4"}
+{"event": "start", "area": "speculative", "run_id": "20261110-215517_8fbabb1_bench_A", "time": "20261110-215517"}
+{"event": "finish", "area": "speculative", "run_id": "20261110-215517_8fbabb1_bench_A", "time": "20261110-221225", "headline": "spec bench A: c=0.34, g1:0.92x, g2:0.88x, g3:0.93x, g4:1.01x, g6:0.99x"}

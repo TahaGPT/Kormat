@@ -1,0 +1,13 @@
+2026-11-10T22:17:25	pid=180583	argv=/home/tahagpt/Documents/genai/Kormat/src/kormat/eval/run.py --model ft --split test --prefix-cache --chunk 40 --out results/eval/test_final/ft
+2026-11-10T22:22:55	pid=181681	argv=/home/tahagpt/Documents/genai/Kormat/src/kormat/eval/run.py --model ft --split test --prefix-cache --chunk 40 --out results/eval/test_final/ft
+2026-11-10T22:34:45	pid=185214	argv=/home/tahagpt/Documents/genai/Kormat/src/kormat/eval/run.py --model ft --split test --prefix-cache --chunk 40 --out results/eval/test_final/ft
+2026-11-10T22:40:14	pid=186601	argv=/home/tahagpt/Documents/genai/Kormat/src/kormat/eval/run.py --model ft --split test --prefix-cache --chunk 40 --out results/eval/test_final/ft
+2026-11-10T22:46:26	pid=189235	argv=/home/tahagpt/Documents/genai/Kormat/src/kormat/eval/run.py --model ft --split test --prefix-cache --chunk 40 --out results/eval/test_final/ft
+2026-11-10T22:52:55	pid=191310	argv=/home/tahagpt/Documents/genai/Kormat/src/kormat/eval/run.py --model ft --split test --prefix-cache --chunk 40 --out results/eval/test_final/ft
+2026-11-10T22:54:29	pid=191788	argv=/home/tahagpt/Documents/genai/Kormat/src/kormat/eval/run.py --model base --split test --prefix-cache --chunk 40 --out results/eval/test_final/base
+2026-11-10T22:55:18	pid=192057	argv=-
+2026-11-10T23:02:04	pid=193926	argv=/home/tahagpt/Documents/genai/Kormat/src/kormat/eval/run.py --model base --split test --prefix-cache --chunk 40 --out results/eval/test_final/base
+2026-11-10T23:11:00	pid=196214	argv=/home/tahagpt/Documents/genai/Kormat/src/kormat/eval/run.py --model base --split test --prefix-cache --chunk 40 --out results/eval/test_final/base
+2026-11-10T23:18:50	pid=198115	argv=/home/tahagpt/Documents/genai/Kormat/src/kormat/eval/run.py --model base --split test --prefix-cache --chunk 40 --out results/eval/test_final/base
+2026-11-10T23:25:58	pid=200802	argv=/home/tahagpt/Documents/genai/Kormat/src/kormat/eval/run.py --model base --split test --prefix-cache --chunk 40 --out results/eval/test_final/base
+2026-11-10T23:34:39	pid=204425	argv=/home/tahagpt/Documents/genai/Kormat/src/kormat/eval/run.py --model base --split test --prefix-cache --chunk 40 --out results/eval/test_final/base

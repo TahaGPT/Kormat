@@ -208,3 +208,6 @@ The base model never outputs "not enough information" or "not excluded". It labe
 **Fine-tuned, val (206):** accuracy 0.733 [0.675, 0.791], macro-F1 0.431 [0.366, 0.558], evidence micro-F1 0.55, 0 INVALID. Validation accuracy equals test accuracy, so the test result is not a lucky patient draw.
 **Ablation:** on the 147 criteria shared with the first (accidental) run, repetition_penalty 1.1 vs plain greedy changed 15 outputs (10 %) and accuracy went 0.714 → 0.735.
 **Dropped for time:** base model on val. It was stopped at 00:05 to free CPU/RAM for the demo recording; before/after rests on the test split.
+
+## 2026-11-24 · Note on `results/test_access.log`
+The log has 13 entries, not one. 12 are the chunk processes of the two test evaluation passes, fine-tuned and base, 6 resumable chunks each, because every chunk process logs its own access. The remaining entry (22:55:18, `argv=-`) is the read-only error-analysis script, which read the test records after the fine-tuned test pass had finished. The configuration (`configs/final.yaml`) was not changed between these accesses, and nothing was tuned on test. The earlier phrase "a single access" referred to the state after the first chunk.
